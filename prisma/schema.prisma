@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum TransactionType {
+  INCOME
+  OUTCOME
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  username     String   @unique
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  sessions Session[]
+  accounts Account[]
+
+  @@map("users")
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  sessionId String   @unique @default(uuid()) @map("session_id")
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("sessions")
+}
+
+model Currency {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  symbol    String   @unique
+  icon      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  accounts     Account[]
+  fromCurrency ExchangeRate[] @relation(name: "fromCurrency")
+  toCurrency   ExchangeRate[] @relation(name: "toCurrency")
+
+  @@map("currencies")
+}
+
+model Account {
+  id            Int      @id @default(autoincrement())
+  name          String
+  accountNumber String?  @unique @map("account_number")
+  color         String?
+  userId        Int      @map("user_id")
+  currencyId    Int      @map("currency_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id])
+  currency     Currency      @relation(fields: [currencyId], references: [id])
+  transactions Transaction[]
+
+  @@map("accounts")
+}
+
+model Category {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String? @db.Text
+  color       String?
+
+  transactions Transaction[]
+
+  @@map("categories")
+}
+
+model Transaction {
+  id         Int             @id @default(autoincrement())
+  type       TransactionType
+  reason     String
+  amount     Int
+  accountId  Int             @map("account_id")
+  categoryId Int?            @map("category_id")
+  createdAt  DateTime        @default(now()) @map("created_at")
+  updatedAt  DateTime        @updatedAt @map("updated_at")
+
+  account  Account   @relation(fields: [accountId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
+
+  @@map("transactions")
+}
+
+model ExchangeRate {
+  id             Int      @id @default(autoincrement())
+  fromCurrencyId Int      @map("from_currency_id")
+  toCurrencyId   Int      @map("to_currency_id")
+  rate           Int
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  fromCurrency Currency @relation(name: "fromCurrency", fields: [fromCurrencyId], references: [id])
+  toCurrency   Currency @relation(name: "toCurrency", fields: [toCurrencyId], references: [id])
+
+  @@map("exchange_rates")
+}
