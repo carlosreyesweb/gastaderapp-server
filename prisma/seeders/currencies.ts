@@ -14,6 +14,12 @@ export async function seedCurrencies(client: PrismaClient) {
       symbol: 'VES',
       icon: 'fa-money-bill-alt',
     },
+    {
+      id: 3,
+      name: 'Euro',
+      symbol: 'EUR',
+      icon: 'fa-euro-sign',
+    },
   ];
 
   console.log('-> Seeding currencies...');
