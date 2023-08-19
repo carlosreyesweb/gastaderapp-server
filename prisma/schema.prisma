@@ -39,7 +39,7 @@ model Session {
   userId    Int      @map("user_id")
   createdAt DateTime @default(now()) @map("created_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
@@ -68,8 +68,8 @@ model Account {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  user         User          @relation(fields: [userId], references: [id])
-  currency     Currency      @relation(fields: [currencyId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currency     Currency      @relation(fields: [currencyId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
   @@map("accounts")
@@ -96,8 +96,8 @@ model Transaction {
   createdAt  DateTime        @default(now()) @map("created_at")
   updatedAt  DateTime        @updatedAt @map("updated_at")
 
-  account  Account   @relation(fields: [accountId], references: [id])
-  category Category? @relation(fields: [categoryId], references: [id])
+  account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   @@map("transactions")
 }
@@ -110,8 +110,8 @@ model ExchangeRate {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  fromCurrency Currency @relation(name: "fromCurrency", fields: [fromCurrencyId], references: [id])
-  toCurrency   Currency @relation(name: "toCurrency", fields: [toCurrencyId], references: [id])
+  fromCurrency Currency @relation(name: "fromCurrency", fields: [fromCurrencyId], references: [id], onDelete: Cascade)
+  toCurrency   Currency @relation(name: "toCurrency", fields: [toCurrencyId], references: [id], onDelete: Cascade)
 
   @@map("exchange_rates")
 }
