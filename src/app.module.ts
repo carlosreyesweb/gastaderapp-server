@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { AccountsModule } from './resources/accounts/accounts.module';
+import { AuthModule } from './resources/auth/auth.module';
 import { CategoriesModule } from './resources/categories/categories.module';
 import { CurrenciesModule } from './resources/currencies/currencies.module';
 import { ExchangeRatesModule } from './resources/exchange-rates/exchange-rates.module';
@@ -18,6 +19,7 @@ import { UsersModule } from './resources/users/users.module';
     ExchangeRatesModule,
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

@@ -27,7 +27,7 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  sessions Session[]
+  session  Session?
   accounts Account[]
 
   @@map("users")
@@ -35,8 +35,8 @@ model User {
 
 model Session {
   id        Int      @id @default(autoincrement())
-  sessionId String   @unique @default(uuid()) @map("session_id")
-  userId    Int      @map("user_id")
+  secret    String   @unique @map("secret")
+  userId    Int      @unique @map("user_id")
   createdAt DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
