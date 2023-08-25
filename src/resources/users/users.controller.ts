@@ -11,6 +11,7 @@ import {
 import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
+import { AdminGuard } from './guards/admin/admin.guard';
 import { UserOwnershipGuard } from './guards/user-ownership/user-ownership.guard';
 import { UsersService } from './users.service';
 
@@ -18,6 +19,12 @@ import { UsersService } from './users.service';
 @UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  @UseGuards(AdminGuard)
+  findAll() {
+    return this.usersService.findAll();
+  }
 
   @Get(':userId')
   async findOne(@Param('userId', ParseIntPipe) userId: number) {

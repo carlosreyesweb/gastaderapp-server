@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { OwnershipViolationException } from 'src/common/exceptions/ownership-violation.exception';
 import { RequestWithUser } from 'src/common/types/request-with-user.type';
+import { OwnershipViolationException } from '../../exceptions/ownership-violation.exception';
 
 @Injectable()
 export class UserOwnershipGuard implements CanActivate {
