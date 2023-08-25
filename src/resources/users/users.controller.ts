@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { AdminGuard } from './guards/admin/admin.guard';
 import { UserOwnershipGuard } from './guards/user-ownership/user-ownership.guard';
@@ -22,8 +23,10 @@ export class UsersController {
 
   @Get()
   @UseGuards(AdminGuard)
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.usersService.findAll();
+
+    return users.map((user) => new UserEntity(user));
   }
 
   @Get(':userId')
@@ -31,21 +34,25 @@ export class UsersController {
     const user = await this.usersService.findOne(userId);
     if (!user) throw new UserNotFoundException();
 
-    return user;
+    return new UserEntity(user);
   }
 
   @Patch(':userId')
   @UseGuards(UserOwnershipGuard)
-  update(
+  async update(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(userId, updateUserDto);
+    const updated = await this.usersService.update(userId, updateUserDto);
+
+    return new UserEntity(updated);
   }
 
   @Delete(':userId')
   @UseGuards(UserOwnershipGuard)
-  remove(@Param('userId', ParseIntPipe) userId: number) {
-    return this.usersService.remove(userId);
+  async remove(@Param('userId', ParseIntPipe) userId: number) {
+    const deleted = await this.usersService.remove(userId);
+
+    return new UserEntity(deleted);
   }
 }

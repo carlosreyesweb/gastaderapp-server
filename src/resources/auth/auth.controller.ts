@@ -1,10 +1,12 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UserEntity } from '../users/entities/user.entity';
 import { UserNotFoundException } from '../users/exceptions/user-not-found.exception';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { AuthEntity } from './entities/auth.entity';
 import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception';
 import { WrongPasswordException } from './exceptions/wrong-password.exception';
 import { PasswordCryptService } from './services/password-crypt/password-crypt.service';
@@ -38,7 +40,7 @@ export class AuthController {
       { secret: session.secret },
     );
 
-    return { user, token };
+    return new AuthEntity({ user: new UserEntity(user), token });
   }
 
   @Post('register')
@@ -66,6 +68,6 @@ export class AuthController {
       { secret: session.secret },
     );
 
-    return { user, token };
+    return new AuthEntity({ user: new UserEntity(user), token });
   }
 }
