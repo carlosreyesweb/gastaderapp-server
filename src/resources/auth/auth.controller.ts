@@ -1,4 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { UserNotFoundException } from '../users/exceptions/user-not-found.exception';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
@@ -13,6 +14,7 @@ export class AuthController {
   constructor(
     private readonly auth: AuthService,
     private readonly users: UsersService,
+    private readonly jwt: JwtService,
     private readonly passwordCrypt: PasswordCryptService,
   ) {}
 
@@ -30,7 +32,11 @@ export class AuthController {
     );
     if (!isPasswordValid) throw new WrongPasswordException();
 
-    const token = await this.auth.authenticate(userId);
+    const session = await this.auth.upsertSession(userId);
+    const token = await this.jwt.signAsync(
+      { userId },
+      { secret: session.secret },
+    );
 
     return { user, token };
   }
@@ -54,7 +60,11 @@ export class AuthController {
       passwordHash,
     });
 
-    const token = await this.auth.authenticate(user.id);
+    const session = await this.auth.upsertSession(user.id);
+    const token = await this.jwt.signAsync(
+      { userId: user.id },
+      { secret: session.secret },
+    );
 
     return { user, token };
   }

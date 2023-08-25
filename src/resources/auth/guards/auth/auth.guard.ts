@@ -1,17 +1,15 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { TokenExpiredError } from 'jsonwebtoken';
 import { UserEntity } from 'src/resources/users/entities/user.entity';
 import { UserNotFoundException } from 'src/resources/users/exceptions/user-not-found.exception';
 import { UsersService } from 'src/resources/users/users.service';
 import { AuthService } from '../../auth.service';
-import { InvalidTokenPayloadException } from '../../exceptions/invalid-token-payload.exception';
 import { InvalidTokenException } from '../../exceptions/invalid-token.exception';
 import { MissingAuthorizationException } from '../../exceptions/missing-authorization.exception';
 import { MissingSessionException } from '../../exceptions/missing-session.exception';
 import { NoTokenException } from '../../exceptions/no-token.exception';
 import { TokenExpiredException } from '../../exceptions/token-expired.exception';
-import { JwtService } from '../../services/jwt/jwt.service';
 import { JWTPayload } from '../../types/jwt-payload.type';
 
 @Injectable()
@@ -33,9 +31,9 @@ export class AuthGuard implements CanActivate {
     const token = authorization.replace('Bearer ', '');
     if (!token) throw new NoTokenException();
 
-    const decoded = this.jwt.decode(token) as JWTPayload;
+    const decoded = this.jwt.decode(token) as JWTPayload | null;
     if (!decoded) throw new InvalidTokenException();
-    if (!decoded.userId) throw new InvalidTokenPayloadException();
+    if (!decoded.userId) throw new InvalidTokenException();
     const { userId } = decoded;
 
     const user = await this.users.findOne(userId);
@@ -49,11 +47,12 @@ export class AuthGuard implements CanActivate {
     if (!session) throw new MissingSessionException();
 
     try {
-      this.jwt.verify(token, session.secret, {
+      await this.jwt.verifyAsync(token, {
+        secret: session.secret,
         ignoreExpiration: false,
       });
     } catch (error) {
-      if (error instanceof TokenExpiredError) {
+      if (error.expiredAt) {
         await this.auth.deleteSession(userId);
         throw new TokenExpiredException();
       }

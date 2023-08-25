@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'node:crypto';
 import { PrismaService } from 'src/database/prisma/prisma.service';
-import { JwtService } from './services/jwt/jwt.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwt: JwtService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async authenticate(userId: number) {
+  upsertSession(userId: number) {
     const secret = crypto.randomBytes(16).toString('hex');
-    const session = await this.prisma.session.upsert({
+
+    return this.prisma.session.upsert({
       where: {
         userId,
       },
@@ -24,10 +21,6 @@ export class AuthService {
         secret,
       },
     });
-
-    const token = this.jwt.sign({ userId }, session.secret);
-
-    return token;
   }
 
   findSession(userId: number) {
