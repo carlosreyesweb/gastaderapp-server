@@ -13,28 +13,28 @@ import { PasswordCryptService } from './services/password-crypt/password-crypt.s
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly auth: AuthService,
-    private readonly users: UsersService,
-    private readonly jwt: JwtService,
-    private readonly passwordCrypt: PasswordCryptService,
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly passwordCryptService: PasswordCryptService,
   ) {}
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const { email, password } = loginDto;
 
-    const user = await this.users.findByEmail(email);
+    const user = await this.usersService.findByEmail(email);
     if (!user) throw new UserNotFoundException();
     const userId = user.id;
 
-    const isPasswordValid = await this.passwordCrypt.comparePasswords(
+    const isPasswordValid = await this.passwordCryptService.comparePasswords(
       password,
       user.passwordHash,
     );
     if (!isPasswordValid) throw new WrongPasswordException();
 
-    const session = await this.auth.upsertSession(userId);
-    const token = await this.jwt.signAsync(
+    const session = await this.authService.upsertSession(userId);
+    const token = await this.jwtService.signAsync(
       { userId },
       { secret: session.secret },
     );
@@ -46,23 +46,23 @@ export class AuthController {
   async register(@Body() registerDto: RegisterDto) {
     const { email, password, name, username } = registerDto;
 
-    const existentByEmail = await this.users.findByEmail(email);
+    const existentByEmail = await this.usersService.findByEmail(email);
     if (existentByEmail) throw new UserAlreadyExistsException(email);
 
-    const existentByUsername = await this.users.findByUsername(username);
+    const existentByUsername = await this.usersService.findByUsername(username);
     if (existentByUsername) throw new UserAlreadyExistsException(username);
 
-    const passwordHash = await this.passwordCrypt.hashPassword(password);
+    const passwordHash = await this.passwordCryptService.hashPassword(password);
 
-    const user = await this.users.create({
+    const user = await this.usersService.create({
       name,
       username,
       email,
       passwordHash,
     });
 
-    const session = await this.auth.upsertSession(user.id);
-    const token = await this.jwt.signAsync(
+    const session = await this.authService.upsertSession(user.id);
+    const token = await this.jwtService.signAsync(
       { userId: user.id },
       { secret: session.secret },
     );

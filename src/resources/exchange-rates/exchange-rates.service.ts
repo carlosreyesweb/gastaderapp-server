@@ -5,28 +5,30 @@ import { UpdateExchangeRateDto } from './dto/update-exchange-rate.dto';
 
 @Injectable()
 export class ExchangeRatesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createExchangeRateDto: CreateExchangeRateDto) {
-    return this.prisma.exchangeRate.create({ data: createExchangeRateDto });
+    return this.prismaService.exchangeRate.create({
+      data: createExchangeRateDto,
+    });
   }
 
   findAll() {
-    return this.prisma.exchangeRate.findMany();
+    return this.prismaService.exchangeRate.findMany();
   }
 
   findOne(id: number) {
-    return this.prisma.exchangeRate.findUnique({ where: { id } });
+    return this.prismaService.exchangeRate.findUnique({ where: { id } });
   }
 
   update(id: number, updateExchangeRateDto: UpdateExchangeRateDto) {
-    return this.prisma.exchangeRate.update({
+    return this.prismaService.exchangeRate.update({
       where: { id },
       data: updateExchangeRateDto,
     });
   }
 
   remove(id: number) {
-    return this.prisma.exchangeRate.delete({ where: { id } });
+    return this.prismaService.exchangeRate.delete({ where: { id } });
   }
 }

@@ -4,12 +4,12 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   upsertSession(userId: number) {
     const secret = crypto.randomBytes(16).toString('hex');
 
-    return this.prisma.session.upsert({
+    return this.prismaService.session.upsert({
       where: {
         userId,
       },
@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   findSession(userId: number) {
-    return this.prisma.session.findUnique({
+    return this.prismaService.session.findUnique({
       where: {
         userId,
       },
@@ -32,7 +32,7 @@ export class AuthService {
   }
 
   deleteSession(userId: number) {
-    return this.prisma.session.delete({
+    return this.prismaService.session.delete({
       where: {
         userId,
       },

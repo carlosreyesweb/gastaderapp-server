@@ -14,9 +14,9 @@ import { JWTPayload } from '../../types/jwt-payload.type';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly users: UsersService,
-    private readonly auth: AuthService,
-    private readonly jwt: JwtService,
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -28,28 +28,28 @@ export class AuthGuard implements CanActivate {
     const token = authorization.replace('Bearer ', '');
     if (!token) throw new NoTokenException();
 
-    const decoded = this.jwt.decode(token) as JWTPayload | null;
+    const decoded = this.jwtService.decode(token) as JWTPayload | null;
     if (!decoded || !decoded.userId) throw new InvalidTokenException();
     const { userId } = decoded;
 
-    const user = await this.users.findOne(userId);
+    const user = await this.usersService.findOne(userId);
     if (!user) {
       throw new UserNotFoundException(
         'El usuario que intentas autenticar no existe.',
       );
     }
 
-    const session = await this.auth.findSession(userId);
+    const session = await this.authService.findSession(userId);
     if (!session) throw new MissingSessionException();
 
     try {
-      await this.jwt.verifyAsync(token, {
+      await this.jwtService.verifyAsync(token, {
         secret: session.secret,
         ignoreExpiration: false,
       });
     } catch (error) {
       if (error.expiredAt) {
-        await this.auth.deleteSession(userId);
+        await this.authService.deleteSession(userId);
         throw new TokenExpiredException();
       }
       throw new InvalidTokenException();
