@@ -1,14 +1,11 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Request } from 'express';
 import { OwnershipViolationException } from 'src/common/exceptions/ownership-violation.exception';
-import { UserEntity } from '../../entities/user.entity';
+import { RequestWithUser } from 'src/common/types/request-with-user.type';
 
 @Injectable()
 export class UserOwnershipGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
-    const request: Request & { user?: UserEntity } = context
-      .switchToHttp()
-      .getRequest();
+    const request: RequestWithUser = context.switchToHttp().getRequest();
 
     const can = +request.params.userId === request.user?.id;
     if (!can) {
