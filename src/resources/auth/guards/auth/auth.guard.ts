@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext) {
-    const request: RequestWithUser = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<RequestWithUser>();
 
     const authorization = request.headers.authorization;
     if (!authorization) throw new MissingAuthorizationException();
@@ -29,9 +29,8 @@ export class AuthGuard implements CanActivate {
     if (!token) throw new NoTokenException();
 
     const decoded = this.jwt.decode(token) as JWTPayload | null;
-    if (!decoded) throw new InvalidTokenException();
+    if (!decoded || !decoded.userId) throw new InvalidTokenException();
     const { userId } = decoded;
-    if (!userId) throw new InvalidTokenException();
 
     const user = await this.users.findOne(userId);
     if (!user) {
