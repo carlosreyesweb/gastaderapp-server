@@ -30,8 +30,8 @@ export class AuthGuard implements CanActivate {
 
     const decoded = this.jwt.decode(token) as JWTPayload | null;
     if (!decoded) throw new InvalidTokenException();
-    if (!decoded.userId) throw new InvalidTokenException();
     const { userId } = decoded;
+    if (!userId) throw new InvalidTokenException();
 
     const user = await this.users.findOne(userId);
     if (!user) {
