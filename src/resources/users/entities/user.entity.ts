@@ -3,7 +3,6 @@ import { Exclude } from 'class-transformer';
 
 export class UserEntity implements User {
   id: number;
-
   name: string;
   username: string;
   email: string;
@@ -12,7 +11,6 @@ export class UserEntity implements User {
   passwordHash: string;
 
   role: Role;
-
   createdAt: Date;
   updatedAt: Date;
 

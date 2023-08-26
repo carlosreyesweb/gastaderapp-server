@@ -6,7 +6,7 @@ export async function seedTransactions(client: PrismaClient) {
       id: 1,
       type: 'INCOME',
       amount: 10000,
-      reason: 'Venta de zapatos',
+      reason: 'Venta de lote de hamburguesas',
       accountId: 1,
       categoryId: 1,
     },
