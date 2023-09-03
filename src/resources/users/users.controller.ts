@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
-  ParseIntPipe,
   Patch,
   UseGuards,
 } from '@nestjs/common';
@@ -12,7 +10,6 @@ import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { User } from './decorators/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
-import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { AdminGuard } from './guards/admin/admin.guard';
 import { UserOwnershipGuard } from './guards/user-ownership/user-ownership.guard';
 import { UsersService } from './users.service';
@@ -31,10 +28,8 @@ export class UsersController {
   }
 
   @Get(':userId')
-  async findOne(@Param('userId', ParseIntPipe) userId: number) {
-    const user = await this.usersService.findOne(userId);
-    if (!user) throw new UserNotFoundException();
-
+  @UseGuards(UserOwnershipGuard)
+  findOne(@User() user: UserEntity) {
     return new UserEntity(user);
   }
 
