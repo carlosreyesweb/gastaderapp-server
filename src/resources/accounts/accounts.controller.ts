@@ -79,7 +79,7 @@ export class AccountsController {
 
   @Get(':accountId')
   @UseGuards(AccountOwnershipGuard)
-  async findOne(@Account() account: AccountEntity) {
+  findOne(@Account() account: AccountEntity) {
     return new AccountEntity(account);
   }
 

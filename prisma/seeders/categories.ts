@@ -5,26 +5,32 @@ export async function seedCategories(client: PrismaClient) {
     {
       id: 1,
       name: 'Comida',
+      userId: 1,
     },
     {
       id: 2,
       name: 'Transporte',
+      userId: 1,
     },
     {
       id: 3,
       name: 'Servicios',
+      userId: 1,
     },
     {
       id: 4,
       name: 'Entretenimiento',
+      userId: 1,
     },
     {
       id: 5,
       name: 'Salud',
+      userId: 1,
     },
     {
       id: 6,
       name: 'Educación',
+      userId: 1,
     },
   ];
 
