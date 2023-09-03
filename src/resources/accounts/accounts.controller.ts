@@ -3,25 +3,24 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
-  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { TransactionType } from '@prisma/client';
-import { User } from 'src/common/decorators/user.decorator';
+
 import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { CurrenciesService } from '../currencies/currencies.service';
 import { CurrencyNotFoundException } from '../currencies/exceptions/currency-not-found.exception';
 import { TransactionsService } from '../transactions/transactions.service';
+import { User } from '../users/decorators/user.decorator';
 import { UserEntity } from '../users/entities/user.entity';
 import { AccountsService } from './accounts.service';
+import { Account } from './decorators/account.decorator';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { AccountEntity } from './entities/account.entity';
 import { AccountAlreadyExistsException } from './exceptions/account-already-exists.exception';
-import { AccountNotFoundException } from './exceptions/account-not-found.exception';
 import { AccountOwnershipGuard } from './guards/account-ownership/account-ownership.guard';
 
 @Controller('accounts')
@@ -80,21 +79,18 @@ export class AccountsController {
 
   @Get(':accountId')
   @UseGuards(AccountOwnershipGuard)
-  async findOne(@Param('accountId', ParseIntPipe) accountId: number) {
-    const account = await this.accountsService.findOne(accountId);
-    if (!account) throw new AccountNotFoundException();
-
+  async findOne(@Account() account: AccountEntity) {
     return new AccountEntity(account);
   }
 
   @Patch(':accountId')
   @UseGuards(AccountOwnershipGuard)
   async update(
-    @Param('accountId', ParseIntPipe) accountId: number,
+    @Account() account: AccountEntity,
     @Body() updateAccountDto: UpdateAccountDto,
   ) {
     const updated = await this.accountsService.update(
-      accountId,
+      account.id,
       updateAccountDto,
     );
 
@@ -103,8 +99,8 @@ export class AccountsController {
 
   @Delete(':accountId')
   @UseGuards(AccountOwnershipGuard)
-  async remove(@Param('accountId', ParseIntPipe) accountId: number) {
-    const deleted = await this.accountsService.remove(accountId);
+  async remove(@Account() account: AccountEntity) {
+    const deleted = await this.accountsService.remove(account.id);
 
     return deleted;
   }

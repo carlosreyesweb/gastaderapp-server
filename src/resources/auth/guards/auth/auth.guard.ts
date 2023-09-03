@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RequestWithUser } from 'src/common/types/request-with-user.type';
+import { ExtendedRequest } from 'src/common/types/extended-request.type';
+import { UserEntity } from 'src/resources/users/entities/user.entity';
 import { UserNotFoundException } from 'src/resources/users/exceptions/user-not-found.exception';
 import { UsersService } from 'src/resources/users/users.service';
 import { AuthService } from '../../auth.service';
@@ -20,7 +21,9 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext) {
-    const request = context.switchToHttp().getRequest<RequestWithUser>();
+    const request = context
+      .switchToHttp()
+      .getRequest<ExtendedRequest<{ user?: UserEntity }>>();
 
     const authorization = request.headers.authorization;
     if (!authorization) throw new MissingAuthorizationException();
