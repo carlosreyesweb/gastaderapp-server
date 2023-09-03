@@ -44,8 +44,6 @@ export class UsersController {
   @Delete(':userId')
   @UseGuards(UserOwnershipGuard)
   async remove(@User() user: UserEntity) {
-    const deleted = await this.usersService.remove(user.id);
-
-    return new UserEntity(deleted);
+    await this.usersService.remove(user.id);
   }
 }

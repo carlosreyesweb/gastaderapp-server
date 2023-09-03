@@ -71,7 +71,7 @@ export class CategoriesController {
 
   @Delete(':categoryId')
   @UseGuards(CategoryOwnershipGuard)
-  remove(@Category() category: CategoryEntity) {
-    return this.categoriesService.remove(category.id);
+  async remove(@Category() category: CategoryEntity) {
+    await this.categoriesService.remove(category.id);
   }
 }

@@ -100,8 +100,6 @@ export class AccountsController {
   @Delete(':accountId')
   @UseGuards(AccountOwnershipGuard)
   async remove(@Account() account: AccountEntity) {
-    const deleted = await this.accountsService.remove(account.id);
-
-    return deleted;
+    await this.accountsService.remove(account.id);
   }
 }
