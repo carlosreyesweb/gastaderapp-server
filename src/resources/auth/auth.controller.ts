@@ -1,5 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ApiTags } from '@nestjs/swagger';
 import { UserEntity } from '../users/entities/user.entity';
 import { UserNotFoundException } from '../users/exceptions/user-not-found.exception';
 import { UsersService } from '../users/users.service';
@@ -11,6 +12,7 @@ import { WrongPasswordException } from './exceptions/wrong-password.exception';
 import { PasswordCryptService } from './services/password-crypt/password-crypt.service';
 
 @Controller('auth')
+@ApiTags('Autenticación')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

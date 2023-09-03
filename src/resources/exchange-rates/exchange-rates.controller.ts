@@ -5,6 +5,7 @@ import {
   ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { ExchangeRateEntity } from './entities/exchange-rate.entity';
 import { ExchangeRateNotFoundException } from './exceptions/exchange-rate-not-found.exception';
@@ -12,6 +13,8 @@ import { ExchangeRatesService } from './exchange-rates.service';
 
 @Controller('exchange-rates')
 @UseGuards(AuthGuard)
+@ApiTags('Tasas de cambio')
+@ApiBearerAuth()
 export class ExchangeRatesController {
   constructor(private readonly exchangeRatesService: ExchangeRatesService) {}
 
