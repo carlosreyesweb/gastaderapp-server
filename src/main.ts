@@ -1,6 +1,7 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerTheme } from 'swagger-themes';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -23,8 +24,10 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
+  const theme = new SwaggerTheme('v3');
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'Docs | Gastaderapp API',
+    customCss: theme.getBuffer('flattop'),
     swaggerOptions: {
       tagsSorter: 'alpha',
       docExpansion: 'none',
