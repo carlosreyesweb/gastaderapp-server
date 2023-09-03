@@ -16,8 +16,16 @@ export class ExchangeRatesController {
   constructor(private readonly exchangeRatesService: ExchangeRatesService) {}
 
   @Post()
-  create(@Body() createExchangeRateDto: CreateExchangeRateDto) {
-    return this.exchangeRatesService.create(createExchangeRateDto);
+  async create(@Body() createExchangeRateDto: CreateExchangeRateDto) {
+    const { fromCurrencyId, toCurrencyId, rate } = createExchangeRateDto;
+
+    const exchangeRate = await this.exchangeRatesService.create({
+      fromCurrency: { connect: { id: fromCurrencyId } },
+      toCurrency: { connect: { id: toCurrencyId } },
+      rate,
+    });
+
+    return exchangeRate;
   }
 
   @Get()

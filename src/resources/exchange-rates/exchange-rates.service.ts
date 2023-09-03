@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma/prisma.service';
-import { CreateExchangeRateDto } from './dto/create-exchange-rate.dto';
-import { UpdateExchangeRateDto } from './dto/update-exchange-rate.dto';
 
 @Injectable()
 export class ExchangeRatesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createExchangeRateDto: CreateExchangeRateDto) {
+  create(data: Prisma.ExchangeRateCreateInput) {
     return this.prismaService.exchangeRate.create({
-      data: createExchangeRateDto,
+      data,
     });
   }
 
@@ -21,10 +20,10 @@ export class ExchangeRatesService {
     return this.prismaService.exchangeRate.findUnique({ where: { id } });
   }
 
-  update(id: number, updateExchangeRateDto: UpdateExchangeRateDto) {
+  update(id: number, data: Prisma.ExchangeRateUpdateInput) {
     return this.prismaService.exchangeRate.update({
       where: { id },
-      data: updateExchangeRateDto,
+      data,
     });
   }
 

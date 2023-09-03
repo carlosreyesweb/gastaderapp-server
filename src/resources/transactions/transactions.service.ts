@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma/prisma.service';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -13,9 +11,9 @@ export class TransactionsService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createTransactionDto: CreateTransactionDto) {
+  create(data: Prisma.TransactionCreateInput) {
     return this.prismaService.transaction.create({
-      data: createTransactionDto,
+      data,
       include: this.include,
     });
   }
@@ -33,10 +31,10 @@ export class TransactionsService {
     });
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
+  update(id: number, data: Prisma.TransactionUpdateInput) {
     return this.prismaService.transaction.update({
       where: { id },
-      data: updateTransactionDto,
+      data,
       include: this.include,
     });
   }

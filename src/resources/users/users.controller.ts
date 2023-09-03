@@ -12,7 +12,6 @@ import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { User } from './decorators/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
-import { PasswordMutationException } from './exceptions/password-mutation.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { AdminGuard } from './guards/admin/admin.guard';
 import { UserOwnershipGuard } from './guards/user-ownership/user-ownership.guard';
@@ -42,8 +41,6 @@ export class UsersController {
   @Patch(':userId')
   @UseGuards(UserOwnershipGuard)
   async update(@User() user: UserEntity, @Body() updateUserDto: UpdateUserDto) {
-    if (updateUserDto.passwordHash) throw new PasswordMutationException();
-
     const updated = await this.usersService.update(user.id, updateUserDto);
 
     return new UserEntity(updated);

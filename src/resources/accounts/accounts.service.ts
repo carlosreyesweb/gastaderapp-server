@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma/prisma.service';
-import { CreateAccountDto } from './dto/create-account.dto';
-import { UpdateAccountDto } from './dto/update-account.dto';
 
 @Injectable()
 export class AccountsService {
@@ -12,7 +10,7 @@ export class AccountsService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(data: CreateAccountDto & { userId: number }) {
+  create(data: Prisma.AccountCreateInput) {
     return this.prismaService.account.create({
       data,
       include: this.include,
@@ -42,7 +40,7 @@ export class AccountsService {
     });
   }
 
-  update(id: number, data: UpdateAccountDto) {
+  update(id: number, data: Prisma.AccountUpdateInput) {
     return this.prismaService.account.update({
       where: { id },
       data,

@@ -54,15 +54,15 @@ export class AccountsController {
       accountNumber,
       balance,
       color,
-      currencyId: currency.id,
-      userId: user.id,
+      currency: { connect: { id: currency.id } },
+      user: { connect: { id: user.id } },
     });
 
     if (balance) {
       await this.transactionsService.create({
         type: TransactionType.INCOME,
         amount: balance,
-        accountId: account.id,
+        account: { connect: { id: account.id } },
         reason: 'Saldo inicial',
       });
     }
