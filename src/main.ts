@@ -6,13 +6,15 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { snapshot: true });
 
+  app.setGlobalPrefix('api');
+
+  if (process.env.NODE_ENV === 'production') app.enableCors();
+
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
-  if (process.env.NODE_ENV === 'production') app.enableCors();
 
   const config = new DocumentBuilder()
     .setTitle('Gastaderapp API')
