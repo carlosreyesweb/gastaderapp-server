@@ -12,6 +12,6 @@ import { PasswordCryptService } from './services/password-crypt/password-crypt.s
     forwardRef(() => UsersModule),
     JwtModule.register({ signOptions: { expiresIn: '1d' } }),
   ],
-  exports: [JwtModule, AuthService, PasswordCryptService],
+  exports: [JwtModule, AuthService],
 })
 export class AuthModule {}
