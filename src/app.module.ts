@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { DatabaseModule } from './database/database.module';
 import { AccountsModule } from './resources/accounts/accounts.module';
 import { AuthModule } from './resources/auth/auth.module';
@@ -18,6 +19,9 @@ import { UsersModule } from './resources/users/users.module';
     TransactionsModule,
     ExchangeRatesModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV !== 'production',
+    }),
     DatabaseModule,
     AuthModule,
   ],
