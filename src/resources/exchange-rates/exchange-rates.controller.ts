@@ -1,53 +1,35 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   Param,
-  Patch,
-  Post,
+  ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateExchangeRateDto } from './dto/create-exchange-rate.dto';
-import { UpdateExchangeRateDto } from './dto/update-exchange-rate.dto';
+import { AuthGuard } from '../auth/guards/auth/auth.guard';
+import { ExchangeRateEntity } from './entities/exchange-rate.entity';
+import { ExchangeRateNotFoundException } from './exceptions/exchange-rate-not-found.exception';
 import { ExchangeRatesService } from './exchange-rates.service';
 
 @Controller('exchange-rates')
+@UseGuards(AuthGuard)
 export class ExchangeRatesController {
   constructor(private readonly exchangeRatesService: ExchangeRatesService) {}
 
-  @Post()
-  async create(@Body() createExchangeRateDto: CreateExchangeRateDto) {
-    const { fromCurrencyId, toCurrencyId, rate } = createExchangeRateDto;
-
-    const exchangeRate = await this.exchangeRatesService.create({
-      fromCurrency: { connect: { id: fromCurrencyId } },
-      toCurrency: { connect: { id: toCurrencyId } },
-      rate,
-    });
-
-    return exchangeRate;
-  }
-
   @Get()
-  findAll() {
-    return this.exchangeRatesService.findAll();
+  async findAll() {
+    const exchangeRates = await this.exchangeRatesService.findAll();
+
+    return exchangeRates.map(
+      (exchangeRate) => new ExchangeRateEntity(exchangeRate),
+    );
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.exchangeRatesService.findOne(+id);
-  }
+  @Get(':exchangeRateId')
+  async findOne(@Param('exchangeRateId', ParseIntPipe) exchangeRateId: number) {
+    const exchangeRate =
+      await this.exchangeRatesService.findOne(exchangeRateId);
+    if (!exchangeRate) throw new ExchangeRateNotFoundException();
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateExchangeRateDto: UpdateExchangeRateDto,
-  ) {
-    return this.exchangeRatesService.update(+id, updateExchangeRateDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.exchangeRatesService.remove(+id);
+    return new ExchangeRateEntity(exchangeRate);
   }
 }
