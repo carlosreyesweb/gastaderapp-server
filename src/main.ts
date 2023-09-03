@@ -16,12 +16,18 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Gastaderapp API')
+    .setDescription('API para la aplicación Gastaderapp')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'Docs | Gastaderapp API',
+    swaggerOptions: {
+      tagsSorter: 'alpha',
+      docExpansion: 'none',
+      persistAuthorization: true,
+    },
   });
 
   await app.listen(3000);
