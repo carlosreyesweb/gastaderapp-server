@@ -1,34 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { CurrenciesService } from './currencies.service';
-import { CreateCurrencyDto } from './dto/create-currency.dto';
-import { UpdateCurrencyDto } from './dto/update-currency.dto';
+import { CurrencyEntity } from './entities/currency.entity';
+import { CurrencyNotFoundException } from './exceptions/currency-not-found.exception';
 
 @Controller('currencies')
+@UseGuards(AuthGuard)
 export class CurrenciesController {
   constructor(private readonly currenciesService: CurrenciesService) {}
 
-  @Post()
-  create(@Body() createCurrencyDto: CreateCurrencyDto) {
-    return this.currenciesService.create(createCurrencyDto);
-  }
-
   @Get()
-  findAll() {
-    return this.currenciesService.findAll();
+  async findAll() {
+    const currencies = await this.currenciesService.findAll();
+
+    return currencies.map((currency) => new CurrencyEntity(currency));
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.currenciesService.findOne(+id);
-  }
+  @Get(':currencyId')
+  async findOne(@Param('currencyId', ParseIntPipe) currencyId: number) {
+    const currency = await this.currenciesService.findOne(currencyId);
+    if (!currency) throw new CurrencyNotFoundException();
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCurrencyDto: UpdateCurrencyDto) {
-    return this.currenciesService.update(+id, updateCurrencyDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.currenciesService.remove(+id);
+    return new CurrencyEntity(currency);
   }
 }
