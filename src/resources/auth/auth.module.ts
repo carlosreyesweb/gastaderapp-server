@@ -10,7 +10,7 @@ import { PasswordCryptService } from './services/password-crypt/password-crypt.s
   providers: [AuthService, PasswordCryptService],
   imports: [
     forwardRef(() => UsersModule),
-    JwtModule.register({ global: true, signOptions: { expiresIn: '7d' } }),
+    JwtModule.register({ global: true, signOptions: { expiresIn: '1d' } }),
   ],
   exports: [AuthService, PasswordCryptService],
 })
