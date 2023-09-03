@@ -9,8 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth/auth.guard';
+import { User } from './decorators/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
+import { PasswordMutationException } from './exceptions/password-mutation.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { AdminGuard } from './guards/admin/admin.guard';
 import { UserOwnershipGuard } from './guards/user-ownership/user-ownership.guard';
@@ -39,19 +41,18 @@ export class UsersController {
 
   @Patch(':userId')
   @UseGuards(UserOwnershipGuard)
-  async update(
-    @Param('userId', ParseIntPipe) userId: number,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    const updated = await this.usersService.update(userId, updateUserDto);
+  async update(@User() user: UserEntity, @Body() updateUserDto: UpdateUserDto) {
+    if (updateUserDto.passwordHash) throw new PasswordMutationException();
+
+    const updated = await this.usersService.update(user.id, updateUserDto);
 
     return new UserEntity(updated);
   }
 
   @Delete(':userId')
   @UseGuards(UserOwnershipGuard)
-  async remove(@Param('userId', ParseIntPipe) userId: number) {
-    const deleted = await this.usersService.remove(userId);
+  async remove(@User() user: UserEntity) {
+    const deleted = await this.usersService.remove(user.id);
 
     return new UserEntity(deleted);
   }
