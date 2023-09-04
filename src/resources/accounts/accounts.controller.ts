@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TransactionType } from '@prisma/client';
-import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { CurrenciesService } from '../currencies/currencies.service';
 import { CurrencyNotFoundException } from '../currencies/exceptions/currency-not-found.exception';
 import { TransactionsService } from '../transactions/transactions.service';
@@ -24,7 +23,6 @@ import { AccountAlreadyExistsException } from './exceptions/account-already-exis
 import { AccountOwnershipGuard } from './guards/account-ownership/account-ownership.guard';
 
 @Controller('accounts')
-@UseGuards(AuthGuard)
 @ApiTags('Cuentas')
 @ApiBearerAuth()
 export class AccountsController {

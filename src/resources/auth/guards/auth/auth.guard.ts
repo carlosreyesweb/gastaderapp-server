@@ -1,10 +1,12 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { ExtendedRequest } from 'src/common/types/extended-request.type';
 import { UserEntity } from 'src/resources/users/entities/user.entity';
 import { UserNotFoundException } from 'src/resources/users/exceptions/user-not-found.exception';
 import { UsersService } from 'src/resources/users/users.service';
 import { AuthService } from '../../auth.service';
+import { SKIP_AUTH_KEY } from '../../decorators/skip-auth.decorator';
 import { InvalidTokenException } from '../../exceptions/invalid-token.exception';
 import { MissingAuthorizationException } from '../../exceptions/missing-authorization.exception';
 import { MissingSessionException } from '../../exceptions/missing-session.exception';
@@ -18,9 +20,16 @@ export class AuthGuard implements CanActivate {
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext) {
+    const skipAuth = this.reflector.getAllAndOverride<boolean>(SKIP_AUTH_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (skipAuth) return true;
+
     const request = context
       .switchToHttp()
       .getRequest<ExtendedRequest<{ user?: UserEntity }>>();

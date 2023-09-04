@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { User } from '../users/decorators/user.decorator';
 import { UserEntity } from '../users/entities/user.entity';
 import { CategoriesService } from './categories.service';
@@ -19,7 +18,6 @@ import { CategoryEntity } from './entities/category.entity';
 import { CategoryOwnershipGuard } from './guards/category-ownership/category-ownership.guard';
 
 @Controller('categories')
-@UseGuards(AuthGuard)
 @ApiTags('Categorías')
 @ApiBearerAuth()
 export class CategoriesController {

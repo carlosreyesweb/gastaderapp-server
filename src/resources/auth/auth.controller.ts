@@ -5,6 +5,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { UserNotFoundException } from '../users/exceptions/user-not-found.exception';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
+import { SkipAuth } from './decorators/skip-auth.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception';
@@ -12,6 +13,7 @@ import { WrongPasswordException } from './exceptions/wrong-password.exception';
 import { PasswordCryptService } from './services/password-crypt/password-crypt.service';
 
 @Controller('auth')
+@SkipAuth()
 @ApiTags('Autenticación')
 export class AuthController {
   constructor(

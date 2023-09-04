@@ -7,7 +7,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { User } from './decorators/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -16,7 +15,6 @@ import { UserOwnershipGuard } from './guards/user-ownership/user-ownership.guard
 import { UsersService } from './users.service';
 
 @Controller('users')
-@UseGuards(AuthGuard)
 @ApiTags('Usuarios')
 @ApiBearerAuth()
 export class UsersController {

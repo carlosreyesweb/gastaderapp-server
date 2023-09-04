@@ -1,18 +1,10 @@
-import {
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/guards/auth/auth.guard';
 import { CurrenciesService } from './currencies.service';
 import { CurrencyEntity } from './entities/currency.entity';
 import { CurrencyNotFoundException } from './exceptions/currency-not-found.exception';
 
 @Controller('currencies')
-@UseGuards(AuthGuard)
 @ApiTags('Monedas')
 @ApiBearerAuth()
 export class CurrenciesController {
