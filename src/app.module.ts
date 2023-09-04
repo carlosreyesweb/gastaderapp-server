@@ -18,8 +18,8 @@ import { UsersModule } from './modules/users/users.module';
       http: process.env.NODE_ENV !== 'production',
     }),
     ExchangeRatesModule,
-    UsersModule,
     TransactionsModule,
+    UsersModule,
   ],
 })
 export class AppModule {}
