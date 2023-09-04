@@ -1,10 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { Body, Controller, Delete, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { CookieOptions, Response } from 'express';
 import { UserEntity } from '../users/entities/user.entity';
 import { UserNotFoundException } from '../users/exceptions/user-not-found.exception';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
+import { SESSION_COOKIE_NAME } from './constants/session-cookie-name.constant';
+import { Cookies } from './decorators/cookies.decorator';
 import { SkipAuth } from './decorators/skip-auth.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -12,19 +14,28 @@ import { UserAlreadyExistsException } from './exceptions/user-already-exists.exc
 import { WrongPasswordException } from './exceptions/wrong-password.exception';
 import { PasswordCryptService } from './services/password-crypt/password-crypt.service';
 
+const SESSION_COOKIE_OPTIONS: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  signed: true,
+};
+
 @Controller('auth')
-@SkipAuth()
 @ApiTags('Autenticación')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
     private readonly passwordCryptService: PasswordCryptService,
   ) {}
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
+  @SkipAuth()
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const { email, password } = loginDto;
 
     const user = await this.usersService.findByEmail(email);
@@ -37,17 +48,21 @@ export class AuthController {
     );
     if (!isPasswordValid) throw new WrongPasswordException();
 
-    const session = await this.authService.upsertSession(userId);
-    const token = await this.jwtService.signAsync(
-      { userId },
-      { secret: session.secret },
-    );
+    const session = await this.authService.createSession(userId);
+    res.cookie(SESSION_COOKIE_NAME, session.sessionId, {
+      ...SESSION_COOKIE_OPTIONS,
+      expires: session.expiresAt,
+    });
 
-    return { user: new UserEntity(user), token };
+    return new UserEntity(user);
   }
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
+  @SkipAuth()
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const { email, password, name, username } = registerDto;
 
     const existentByEmail = await this.usersService.findByEmail(email);
@@ -65,12 +80,21 @@ export class AuthController {
       passwordHash,
     });
 
-    const session = await this.authService.upsertSession(user.id);
-    const token = await this.jwtService.signAsync(
-      { userId: user.id },
-      { secret: session.secret },
-    );
+    const session = await this.authService.createSession(user.id);
+    res.cookie(SESSION_COOKIE_NAME, session.sessionId, {
+      ...SESSION_COOKIE_OPTIONS,
+      expires: session.expiresAt,
+    });
 
-    return { user: new UserEntity(user), token };
+    return new UserEntity(user);
+  }
+
+  @Delete('logout')
+  async logout(
+    @Cookies(SESSION_COOKIE_NAME) sessionId: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.deleteSession(sessionId);
+    res.clearCookie(SESSION_COOKIE_NAME);
   }
 }

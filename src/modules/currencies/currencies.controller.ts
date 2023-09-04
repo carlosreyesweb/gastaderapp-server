@@ -1,12 +1,11 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { CurrenciesService } from './currencies.service';
 import { CurrencyEntity } from './entities/currency.entity';
 import { CurrencyNotFoundException } from './exceptions/currency-not-found.exception';
 
 @Controller('currencies')
 @ApiTags('Monedas')
-@ApiBearerAuth()
 export class CurrenciesController {
   constructor(private readonly currenciesService: CurrenciesService) {}
 

@@ -7,7 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { TransactionType } from '@prisma/client';
 import { CurrenciesService } from '../currencies/currencies.service';
 import { CurrencyNotFoundException } from '../currencies/exceptions/currency-not-found.exception';
@@ -24,7 +24,6 @@ import { AccountOwnershipGuard } from './guards/account-ownership/account-owners
 
 @Controller('accounts')
 @ApiTags('Cuentas')
-@ApiBearerAuth()
 export class AccountsController {
   constructor(
     private readonly accountsService: AccountsService,

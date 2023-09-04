@@ -7,7 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { User } from '../users/decorators/user.decorator';
 import { UserEntity } from '../users/entities/user.entity';
 import { CategoriesService } from './categories.service';
@@ -19,7 +19,6 @@ import { CategoryOwnershipGuard } from './guards/category-ownership/category-own
 
 @Controller('categories')
 @ApiTags('Categorías')
-@ApiBearerAuth()
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
