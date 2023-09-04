@@ -8,7 +8,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  if (process.env.NODE_ENV === 'production') app.enableCors();
+  app.enableCors({ origin: ['http://localhost:3000'] });
 
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
