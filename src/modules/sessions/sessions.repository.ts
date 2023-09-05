@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaRepository } from '../prisma/prisma.repository';
 
 @Injectable()
-export class SessionRepository {
+export class SessionsRepository {
   constructor(private readonly prismaRepository: PrismaRepository) {}
 
   create(userId: number) {
@@ -11,9 +10,6 @@ export class SessionRepository {
 
     return this.prismaRepository.session.create({
       data: { userId, expiresAt },
-      include: {
-        user: true,
-      },
     });
   }
 
@@ -25,20 +21,18 @@ export class SessionRepository {
     });
   }
 
-  findOne(where: Prisma.SessionWhereUniqueInput) {
+  findOne(id: string) {
     return this.prismaRepository.session.findUnique({
-      where,
+      where: { id },
       include: {
         user: true,
       },
     });
   }
 
-  remove(idOrSessionId: number | string) {
-    const isSessionId = typeof idOrSessionId === 'string';
-
+  remove(id: string) {
     return this.prismaRepository.session.delete({
-      where: isSessionId ? { sessionId: idOrSessionId } : { id: idOrSessionId },
+      where: { id },
     });
   }
 

@@ -5,8 +5,6 @@ import { CurrencyEntity } from 'src/modules/currencies/entities/currency.entity'
 export class ExchangeRateEntity implements ExchangeRate {
   id: number;
   rate: number;
-  createdAt: Date;
-  updatedAt: Date;
 
   @Exclude()
   fromCurrencyId: number;
@@ -16,6 +14,8 @@ export class ExchangeRateEntity implements ExchangeRate {
 
   fromCurrency?: CurrencyEntity;
   toCurrency?: CurrencyEntity;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor({
     fromCurrency,

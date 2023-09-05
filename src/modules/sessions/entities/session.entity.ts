@@ -3,17 +3,14 @@ import { Exclude } from 'class-transformer';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 
 export class SessionEntity implements Session {
-  id: number;
-  createdAt: Date;
-  expiresAt: Date;
-
-  @Exclude()
-  sessionId: string;
+  id: string;
 
   @Exclude()
   userId: number;
 
   user?: UserEntity;
+  createdAt: Date;
+  expiresAt: Date;
 
   constructor({ user, ...partial }: Partial<SessionEntity>) {
     Object.assign(this, partial);

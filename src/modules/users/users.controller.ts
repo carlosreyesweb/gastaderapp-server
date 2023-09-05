@@ -1,17 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Patch,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from './decorators/user.decorator';
+import { Session } from '../sessions/decorators/session.decorator';
+import { SessionEntity } from '../sessions/entities/session.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserEntity } from './entities/user.entity';
-import { AdminGuard } from './guards/admin/admin.guard';
-import { UserOwnershipGuard } from './guards/user-ownership/user-ownership.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -19,27 +10,18 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  @UseGuards(AdminGuard)
-  findAll() {
-    return this.usersService.findAll();
+  @Get('me')
+  findOne(@Session() session: SessionEntity) {
+    return this.usersService.findOne(session.userId);
   }
 
-  @Get(':id')
-  @UseGuards(UserOwnershipGuard)
-  findOne(@User() user: UserEntity) {
-    return new UserEntity(user);
+  @Patch('me')
+  update(@Session() session: SessionEntity, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(session.userId, dto);
   }
 
-  @Patch(':id')
-  @UseGuards(UserOwnershipGuard)
-  update(@User() user: UserEntity, @Body() dto: UpdateUserDto) {
-    return this.usersService.update(user.id, dto);
-  }
-
-  @Delete(':id')
-  @UseGuards(UserOwnershipGuard)
-  remove(@User() user: UserEntity) {
-    return this.usersService.remove(user.id);
+  @Delete('me')
+  remove(@Session() session: SessionEntity) {
+    return this.usersService.remove(session.userId);
   }
 }

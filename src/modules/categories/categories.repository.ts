@@ -17,7 +17,6 @@ export class CategoriesRepository {
   findAll(where?: Prisma.CategoryWhereInput) {
     return this.prismaRepository.category.findMany({
       where,
-      include: { user: true },
     });
   }
 

@@ -15,11 +15,10 @@ export class TransactionEntity implements Transaction {
   @Exclude()
   accountId: number;
 
-  createdAt: Date;
-  updatedAt: Date;
-
   account?: AccountEntity;
   category?: CategoryEntity | null;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor({ account, category, ...data }: Partial<TransactionEntity>) {
     Object.assign(this, data);

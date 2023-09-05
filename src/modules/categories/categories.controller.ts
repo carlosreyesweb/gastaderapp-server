@@ -3,18 +3,18 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from '../users/decorators/user.decorator';
-import { UserEntity } from '../users/entities/user.entity';
+import { Session } from '../sessions/decorators/session.decorator';
+import { SessionEntity } from '../sessions/entities/session.entity';
 import { CategoriesService } from './categories.service';
-import { Category } from './decorators/category.decorator';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { CategoryEntity } from './entities/category.entity';
 import { CategoryOwnershipGuard } from './guards/category-ownership/category-ownership.guard';
 
 @Controller('categories')
@@ -23,30 +23,33 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  create(@User() user: UserEntity, @Body() dto: CreateCategoryDto) {
-    return this.categoriesService.create(user.id, dto);
+  create(@Session() session: SessionEntity, @Body() dto: CreateCategoryDto) {
+    return this.categoriesService.create(session.userId, dto);
   }
 
   @Get()
-  findAll(@User() user: UserEntity) {
-    return this.categoriesService.findAll(user.id);
+  findAll(@Session() session: SessionEntity) {
+    return this.categoriesService.findAll(session.userId);
   }
 
   @Get(':id')
   @UseGuards(CategoryOwnershipGuard)
-  findOne(@Category() category: CategoryEntity) {
-    return category;
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.categoriesService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(CategoryOwnershipGuard)
-  update(@Category() category: CategoryEntity, @Body() dto: UpdateCategoryDto) {
-    return this.categoriesService.update(category.id, dto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateCategoryDto,
+  ) {
+    return this.categoriesService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(CategoryOwnershipGuard)
-  remove(@Category() category: CategoryEntity) {
-    return this.categoriesService.remove(category.id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.categoriesService.remove(id);
   }
 }

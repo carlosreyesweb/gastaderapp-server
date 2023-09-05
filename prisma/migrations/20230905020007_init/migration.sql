@@ -16,13 +16,11 @@ CREATE TABLE `users` (
 
 -- CreateTable
 CREATE TABLE `sessions` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `session_id` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(191) NOT NULL,
     `user_id` INTEGER NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expires_at` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `sessions_session_id_key`(`session_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

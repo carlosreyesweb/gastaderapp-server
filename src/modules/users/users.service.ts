@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RegisterDto } from '../auth/dto/register.dto';
-import { PasswordCryptService } from '../auth/services/password-crypt/password-crypt.service';
+import { PasswordsService } from '../passwords/passwords.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception';
@@ -11,7 +11,7 @@ import { UsersRepository } from './users.repository';
 export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly passwordCryptService: PasswordCryptService,
+    private readonly passwordsService: PasswordsService,
   ) {}
 
   async create(dto: RegisterDto) {
@@ -23,7 +23,7 @@ export class UsersService {
     const existentByUsername = await this.usersRepository.findOne({ username });
     if (existentByUsername) throw new UserAlreadyExistsException(username);
 
-    const passwordHash = await this.passwordCryptService.hashPassword(password);
+    const passwordHash = await this.passwordsService.hash(password);
 
     const user = await this.usersRepository.create({
       name,
@@ -89,7 +89,7 @@ export class UsersService {
 
     let passwordHash: string | undefined;
     if (password) {
-      passwordHash = await this.passwordCryptService.hashPassword(password);
+      passwordHash = await this.passwordsService.hash(password);
     }
 
     const updated = await this.usersRepository.update(id, {

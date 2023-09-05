@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 
-export class WrongPasswordException extends BadRequestException {
+export class PasswordsMismatchException extends BadRequestException {
   constructor() {
     super('Contraseña incorrecta.');
   }

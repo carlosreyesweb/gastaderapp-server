@@ -3,18 +3,18 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from '../users/decorators/user.decorator';
-import { UserEntity } from '../users/entities/user.entity';
+import { Session } from '../sessions/decorators/session.decorator';
+import { SessionEntity } from '../sessions/entities/session.entity';
 import { AccountsService } from './accounts.service';
-import { Account } from './decorators/account.decorator';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { AccountEntity } from './entities/account.entity';
 import { AccountOwnershipGuard } from './guards/account-ownership/account-ownership.guard';
 
 @Controller('accounts')
@@ -23,30 +23,33 @@ export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
 
   @Post()
-  create(@User() user: UserEntity, @Body() dto: CreateAccountDto) {
-    return this.accountsService.create(user.id, dto);
+  create(@Session() session: SessionEntity, @Body() dto: CreateAccountDto) {
+    return this.accountsService.create(session.userId, dto);
   }
 
   @Get()
-  findAll(@User() user: UserEntity) {
-    return this.accountsService.findAll(user.id);
+  findAll(@Session() session: SessionEntity) {
+    return this.accountsService.findAll(session.userId);
   }
 
   @Get(':id')
   @UseGuards(AccountOwnershipGuard)
-  findOne(@Account() account: AccountEntity) {
-    return account;
+  findOne(@Param(':id', ParseIntPipe) id: number) {
+    return this.accountsService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(AccountOwnershipGuard)
-  update(@Account() account: AccountEntity, @Body() dto: UpdateAccountDto) {
-    return this.accountsService.update(account.id, dto);
+  update(
+    @Param(':id', ParseIntPipe) id: number,
+    @Body() dto: UpdateAccountDto,
+  ) {
+    return this.accountsService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(AccountOwnershipGuard)
-  remove(@Account() account: AccountEntity) {
-    return this.accountsService.remove(account.id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.accountsService.remove(id);
   }
 }

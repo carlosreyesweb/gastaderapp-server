@@ -17,12 +17,11 @@ export class AccountEntity implements Account {
   @Exclude()
   userId: number;
 
-  createdAt: Date;
-  updatedAt: Date;
-
   currency?: CurrencyEntity;
   user?: UserEntity;
   transactions?: TransactionEntity[];
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor({
     currency,
