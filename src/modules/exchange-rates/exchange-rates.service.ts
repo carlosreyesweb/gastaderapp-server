@@ -1,32 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { UpdateExchangeRateDto } from './dto/update-exchange-rate.dto';
+import { ExchangeRateEntity } from './entities/exchange-rate.entity';
+import { ExchangeRateNotFoundException } from './exceptions/exchange-rate-not-found.exception';
+import { ExchangeRatesRepository } from './exchange-rates.repository';
 
 @Injectable()
 export class ExchangeRatesService {
-  private readonly include: Prisma.ExchangeRateInclude = {
-    fromCurrency: true,
-    toCurrency: true,
-  };
+  constructor(
+    private readonly exchangeRatesRepository: ExchangeRatesRepository,
+  ) {}
 
-  constructor(private readonly prismaService: PrismaService) {}
+  async findAll() {
+    const exchangeRates = await this.exchangeRatesRepository.findAll();
 
-  findAll() {
-    return this.prismaService.exchangeRate.findMany({ include: this.include });
+    return exchangeRates.map(
+      (exchangeRate) => new ExchangeRateEntity(exchangeRate),
+    );
   }
 
-  findOne(id: number) {
-    return this.prismaService.exchangeRate.findUnique({
-      where: { id },
-      include: this.include,
-    });
+  async findOne(id: number) {
+    const exchangeRate = await this.exchangeRatesRepository.findOne(id);
+    if (!exchangeRate) throw new ExchangeRateNotFoundException();
+
+    return new ExchangeRateEntity(exchangeRate);
   }
 
-  update(id: number, data: Prisma.ExchangeRateUpdateInput) {
-    return this.prismaService.exchangeRate.update({
-      where: { id },
-      data,
-      include: this.include,
-    });
+  async update(id: number, dto: UpdateExchangeRateDto) {
+    const updated = await this.exchangeRatesRepository.update(id, dto);
+
+    return new ExchangeRateEntity(updated);
   }
 }

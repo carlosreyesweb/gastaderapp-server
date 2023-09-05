@@ -1,45 +1,64 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { AccountsService } from '../accounts/accounts.service';
+import { CategoriesService } from '../categories/categories.service';
+import { CategoryEntity } from '../categories/entities/category.entity';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { TransactionEntity } from './entities/transaction.entity';
+import { TransactionsRepository } from './transactions.repository';
 
 @Injectable()
 export class TransactionsService {
-  private readonly include: Prisma.TransactionInclude = {
-    account: true,
-    category: true,
-  };
+  constructor(
+    private readonly transactionsRepository: TransactionsRepository,
+    private readonly categoriesService: CategoriesService,
+    @Inject(forwardRef(() => AccountsService))
+    private readonly accountsService: AccountsService,
+  ) {}
 
-  constructor(private readonly prismaService: PrismaService) {}
+  async create(dto: CreateTransactionDto) {
+    const { type, accountId, amount, reason, categoryId } = dto;
 
-  create(data: Prisma.TransactionCreateInput) {
-    return this.prismaService.transaction.create({
-      data,
-      include: this.include,
+    const account = await this.accountsService.findOne(accountId);
+
+    let category: CategoryEntity | undefined;
+    if (categoryId) {
+      category = await this.categoriesService.findOne(categoryId);
+    }
+
+    const transaction = await this.transactionsRepository.create({
+      type,
+      account: { connect: { id: account.id } },
+      amount,
+      reason,
+      category: { connect: { id: category?.id } },
     });
+
+    return new TransactionEntity(transaction);
   }
 
-  findAll() {
-    return this.prismaService.transaction.findMany({
-      include: this.include,
-    });
+  async findAll() {
+    const transactions = await this.transactionsRepository.findAll();
+
+    return transactions.map(
+      (transaction) => new TransactionEntity(transaction),
+    );
   }
 
-  findOne(id: number) {
-    return this.prismaService.transaction.findUnique({
-      where: { id },
-      include: this.include,
-    });
+  async findOne(id: number) {
+    const transaction = await this.transactionsRepository.findOne(id);
+    if (!transaction) throw new Error();
+
+    return new TransactionEntity(transaction);
   }
 
-  update(id: number, data: Prisma.TransactionUpdateInput) {
-    return this.prismaService.transaction.update({
-      where: { id },
-      data,
-      include: this.include,
-    });
+  async update(id: number, dto: UpdateTransactionDto) {
+    const updated = await this.transactionsRepository.update(id, dto);
+
+    return new TransactionEntity(updated);
   }
 
-  remove(id: number) {
-    return this.prismaService.transaction.delete({ where: { id } });
+  async remove(id: number) {
+    await this.transactionsRepository.remove(id);
   }
 }

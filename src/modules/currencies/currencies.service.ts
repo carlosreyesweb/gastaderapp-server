@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { CurrenciesRepository } from './currencies.repository';
+import { CurrencyEntity } from './entities/currency.entity';
+import { CurrencyNotFoundException } from './exceptions/currency-not-found.exception';
 
 @Injectable()
 export class CurrenciesService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly currenciesRepository: CurrenciesRepository) {}
 
-  findAll() {
-    return this.prismaService.currency.findMany();
+  async findAll() {
+    const currencies = await this.currenciesRepository.findAll();
+
+    return currencies.map((currency) => new CurrencyEntity(currency));
   }
 
-  findOne(id: number) {
-    return this.prismaService.currency.findUnique({ where: { id } });
+  async findOne(id: number) {
+    const currency = await this.currenciesRepository.findOne(id);
+    if (!currency) throw new CurrencyNotFoundException();
+
+    return new CurrencyEntity(currency);
   }
 }

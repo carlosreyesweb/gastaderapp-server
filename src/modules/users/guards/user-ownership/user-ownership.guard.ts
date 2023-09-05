@@ -10,7 +10,9 @@ export class UserOwnershipGuard implements CanActivate {
       .switchToHttp()
       .getRequest<ExtendedRequest<{ user: UserEntity }>>();
 
-    const can = +request.params.userId === request.user?.id;
+    const userId = +request.params.id;
+
+    const can = userId === request.user?.id;
     if (!can) {
       throw new OwnershipViolationException(
         'No eres el dueño de este usuario.',

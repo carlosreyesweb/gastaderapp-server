@@ -21,29 +21,25 @@ export class UsersController {
 
   @Get()
   @UseGuards(AdminGuard)
-  async findAll() {
-    const users = await this.usersService.findAll();
-
-    return users.map((user) => new UserEntity(user));
+  findAll() {
+    return this.usersService.findAll();
   }
 
-  @Get(':userId')
+  @Get(':id')
   @UseGuards(UserOwnershipGuard)
   findOne(@User() user: UserEntity) {
     return new UserEntity(user);
   }
 
-  @Patch(':userId')
+  @Patch(':id')
   @UseGuards(UserOwnershipGuard)
-  async update(@User() user: UserEntity, @Body() updateUserDto: UpdateUserDto) {
-    const updated = await this.usersService.update(user.id, updateUserDto);
-
-    return new UserEntity(updated);
+  update(@User() user: UserEntity, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(user.id, dto);
   }
 
-  @Delete(':userId')
+  @Delete(':id')
   @UseGuards(UserOwnershipGuard)
-  async remove(@User() user: UserEntity) {
-    await this.usersService.remove(user.id);
+  remove(@User() user: UserEntity) {
+    return this.usersService.remove(user.id);
   }
 }

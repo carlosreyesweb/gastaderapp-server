@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -18,19 +19,8 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post()
-  async create(@Body() createTransactionDto: CreateTransactionDto) {
-    const { type, accountId, amount, reason, categoryId } =
-      createTransactionDto;
-
-    const transaction = await this.transactionsService.create({
-      type,
-      account: { connect: { id: accountId } },
-      amount,
-      reason,
-      category: { connect: { id: categoryId } },
-    });
-
-    return transaction;
+  create(@Body() dto: CreateTransactionDto) {
+    return this.transactionsService.create(dto);
   }
 
   @Get()
@@ -39,20 +29,20 @@ export class TransactionsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.transactionsService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.transactionsService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
-    @Body() updateTransactionDto: UpdateTransactionDto,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateTransactionDto,
   ) {
-    return this.transactionsService.update(+id, updateTransactionDto);
+    return this.transactionsService.update(id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.transactionsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.transactionsService.remove(id);
   }
 }

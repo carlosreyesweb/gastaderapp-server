@@ -1,47 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { CategoriesRepository } from './categories.repository';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryEntity } from './entities/category.entity';
+import { CategoryNotFoundException } from './exceptions/category-not-found.exception';
 
 @Injectable()
 export class CategoriesService {
-  private readonly include: Prisma.CategoryInclude = {
-    transactions: true,
-  };
+  constructor(private readonly categoriesRepository: CategoriesRepository) {}
 
-  constructor(private readonly prismaService: PrismaService) {}
+  async create(userId: number, dto: CreateCategoryDto) {
+    const { name, description, color } = dto;
 
-  create(data: Prisma.CategoryCreateInput) {
-    return this.prismaService.category.create({ data });
-  }
-
-  findAll() {
-    return this.prismaService.category.findMany({ include: { user: true } });
-  }
-
-  findAllByUser(userId: number) {
-    return this.prismaService.category.findMany({
-      where: { userId },
+    const category = await this.categoriesRepository.create({
+      name,
+      description,
+      color,
+      user: { connect: { id: userId } },
     });
+
+    return new CategoryEntity(category);
   }
 
-  findOne(id: number) {
-    return this.prismaService.category.findUnique({
-      where: { id },
-      include: this.include,
-    });
+  async findAll(userId: number) {
+    const categories = await this.categoriesRepository.findAll({ userId });
+
+    return categories.map((category) => new CategoryEntity(category));
   }
 
-  update(id: number, data: Prisma.CategoryUpdateInput) {
-    return this.prismaService.category.update({
-      where: { id },
-      data,
-      include: this.include,
-    });
+  async findOne(id: number) {
+    const category = await this.categoriesRepository.findOne(id);
+    if (!category) throw new CategoryNotFoundException();
+
+    return new CategoryEntity(category);
   }
 
-  remove(id: number) {
-    return this.prismaService.category.delete({
-      where: { id },
-    });
+  async update(id: number, dto: UpdateCategoryDto) {
+    const updated = await this.categoriesRepository.update(id, dto);
+
+    return new CategoryEntity(updated);
+  }
+
+  async remove(id: number) {
+    await this.categoriesRepository.remove(id);
   }
 }

@@ -1,7 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ExchangeRateEntity } from './entities/exchange-rate.entity';
-import { ExchangeRateNotFoundException } from './exceptions/exchange-rate-not-found.exception';
 import { ExchangeRatesService } from './exchange-rates.service';
 
 @Controller('exchange-rates')
@@ -10,20 +8,12 @@ export class ExchangeRatesController {
   constructor(private readonly exchangeRatesService: ExchangeRatesService) {}
 
   @Get()
-  async findAll() {
-    const exchangeRates = await this.exchangeRatesService.findAll();
-
-    return exchangeRates.map(
-      (exchangeRate) => new ExchangeRateEntity(exchangeRate),
-    );
+  findAll() {
+    return this.exchangeRatesService.findAll();
   }
 
-  @Get(':exchangeRateId')
-  async findOne(@Param('exchangeRateId', ParseIntPipe) exchangeRateId: number) {
-    const exchangeRate =
-      await this.exchangeRatesService.findOne(exchangeRateId);
-    if (!exchangeRate) throw new ExchangeRateNotFoundException();
-
-    return new ExchangeRateEntity(exchangeRate);
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.exchangeRatesService.findOne(id);
   }
 }

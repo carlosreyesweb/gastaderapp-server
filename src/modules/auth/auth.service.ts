@@ -1,60 +1,75 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../users/users.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { SessionEntity } from './entities/session.entity';
+import { SessionNotFoundException } from './exceptions/session-not-found.exception';
+import { WrongPasswordException } from './exceptions/wrong-password.exception';
+import { PasswordCryptService } from './services/password-crypt/password-crypt.service';
+import { SessionRepository } from './session.repository';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly sessionRepository: SessionRepository,
+    private readonly passwordCryptService: PasswordCryptService,
+    private readonly usersService: UsersService,
+  ) {}
 
-  createSession(userId: number) {
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
+  async login(dto: LoginDto) {
+    const { email, password } = dto;
 
-    return this.prismaService.session.create({
-      data: { userId, expiresAt },
-    });
+    const user = await this.usersService.findByEmail(email);
+    const userId = user.id;
+
+    const isPasswordValid = await this.passwordCryptService.comparePasswords(
+      password,
+      user.passwordHash,
+    );
+    if (!isPasswordValid) throw new WrongPasswordException();
+
+    const session = await this.sessionRepository.create(userId);
+
+    return new SessionEntity(session);
   }
 
-  findAllSessions(userId: number) {
-    return this.prismaService.session.findMany({
-      where: {
-        userId,
-      },
+  async register(dto: RegisterDto) {
+    const { email, password, name, username } = dto;
+
+    const user = await this.usersService.create({
+      name,
+      username,
+      email,
+      password,
     });
+
+    const session = await this.sessionRepository.create(user.id);
+
+    return new SessionEntity(session);
   }
 
-  findSession(sessionId: string) {
-    return this.prismaService.session.findUnique({
-      where: {
-        sessionId,
-      },
-      include: {
-        user: true,
-      },
-    });
+  async findSession(idOrSessionId: number | string) {
+    const isSessionId = typeof idOrSessionId === 'string';
+
+    const session = await this.sessionRepository.findOne(
+      isSessionId ? { sessionId: idOrSessionId } : { id: idOrSessionId },
+    );
+    if (!session) throw new SessionNotFoundException();
+
+    return new SessionEntity(session);
   }
 
-  deleteSession(sessionId: string) {
-    return this.prismaService.session.delete({
-      where: {
-        sessionId,
-      },
-    });
+  async findAllSessions(userId: number) {
+    const sessions = await this.sessionRepository.findAll(userId);
+
+    return sessions.map((session) => new SessionEntity(session));
   }
 
-  deleteAllSessions(userId: number) {
-    return this.prismaService.session.deleteMany({
-      where: {
-        userId,
-      },
-    });
+  async removeSession(idOrSessionId: number | string) {
+    await this.sessionRepository.remove(idOrSessionId);
   }
 
-  deleteExpiredSessions() {
-    return this.prismaService.session.deleteMany({
-      where: {
-        expiresAt: {
-          lt: new Date(),
-        },
-      },
-    });
+  async removeAllSessions(userId: number) {
+    await this.sessionRepository.removeAll(userId);
   }
 }
