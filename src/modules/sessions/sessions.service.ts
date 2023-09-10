@@ -33,8 +33,4 @@ export class SessionsService {
   async removeAll(userId: number) {
     await this.sessionsRepository.removeAll(userId);
   }
-
-  async removeExpired() {
-    await this.sessionsRepository.removeExpired();
-  }
 }

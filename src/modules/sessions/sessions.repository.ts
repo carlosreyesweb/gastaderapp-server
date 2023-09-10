@@ -6,7 +6,7 @@ export class SessionsRepository {
   constructor(private readonly prismaRepository: PrismaRepository) {}
 
   create(userId: number) {
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
 
     return this.prismaRepository.session.create({
       data: { userId, expiresAt },
@@ -39,16 +39,6 @@ export class SessionsRepository {
   removeAll(userId: number) {
     return this.prismaRepository.session.deleteMany({
       where: { userId },
-    });
-  }
-
-  removeExpired() {
-    return this.prismaRepository.session.deleteMany({
-      where: {
-        expiresAt: {
-          lt: new Date(),
-        },
-      },
     });
   }
 }

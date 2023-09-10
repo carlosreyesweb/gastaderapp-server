@@ -1,8 +1,14 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request, Response } from 'express';
+import { ExpiredSessionException } from 'src/modules/sessions/exceptions/expired-session.exception';
+import { SessionNotFoundException } from 'src/modules/sessions/exceptions/session-not-found.exception';
 import { SessionsService } from 'src/modules/sessions/sessions.service';
-import { ExpiredSessionException } from '../../../sessions/exceptions/expired-session.exception';
 import { SESSION_COOKIE_NAME } from '../../constants/session-cookie-name.constant';
 import { SKIP_AUTH_KEY } from '../../decorators/skip-auth.decorator';
 import { MissingSessionCookieException } from '../../exceptions/missing-session-cookie.exception';
@@ -27,17 +33,27 @@ export class AuthGuard implements CanActivate {
     const sessionId: string = request.signedCookies[SESSION_COOKIE_NAME];
     if (!sessionId) throw new MissingSessionCookieException();
 
-    const session = await this.sessionsService.findOne(sessionId);
+    try {
+      const session = await this.sessionsService.findOne(sessionId);
 
-    if (session.expiresAt < new Date()) {
-      await this.sessionsService.remove(session.id);
+      if (session.expiresAt < new Date()) {
+        await this.sessionsService.remove(session.id);
+        throw new ExpiredSessionException();
+      }
+
+      request.session = session;
+
+      return true;
+    } catch (error) {
       response.clearCookie(SESSION_COOKIE_NAME);
 
-      throw new ExpiredSessionException();
+      if (error instanceof SessionNotFoundException) {
+        throw new UnauthorizedException(
+          'Sesión no encontrada. Por favor, inicia sesión nuevamente.',
+        );
+      }
+
+      throw error;
     }
-
-    request.session = session;
-
-    return true;
   }
 }

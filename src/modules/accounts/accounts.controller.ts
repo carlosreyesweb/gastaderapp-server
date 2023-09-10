@@ -34,16 +34,13 @@ export class AccountsController {
 
   @Get(':id')
   @UseGuards(AccountOwnershipGuard)
-  findOne(@Param(':id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.accountsService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(AccountOwnershipGuard)
-  update(
-    @Param(':id', ParseIntPipe) id: number,
-    @Body() dto: UpdateAccountDto,
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateAccountDto) {
     return this.accountsService.update(id, dto);
   }
 

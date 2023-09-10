@@ -7,7 +7,7 @@ import { UserEntity } from 'src/modules/users/entities/user.entity';
 export class AccountEntity implements Account {
   id: number;
   name: string;
-  accountNumber: string | null;
+  accountNumber: string;
   balance: number;
   color: string | null;
 

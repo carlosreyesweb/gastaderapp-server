@@ -21,11 +21,10 @@ export class AccountsService {
   async create(userId: number, dto: CreateAccountDto) {
     const { currencyId, name, accountNumber, balance, color } = dto;
 
-    const existentAccount = await this.accountsRepository.findOne({
+    const existent = await this.accountsRepository.findOne({
       name,
-      accountNumber,
     });
-    if (existentAccount) throw new AccountAlreadyExistsException();
+    if (existent) throw new AccountAlreadyExistsException();
 
     const currency = await this.currenciesService.findOne(currencyId);
 

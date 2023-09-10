@@ -1,9 +1,7 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
-export class SessionNotFoundException extends UnauthorizedException {
-  constructor(
-    message = 'Sesión no encontrada. Por favor, inicia sesión nuevamente.',
-  ) {
+export class SessionNotFoundException extends NotFoundException {
+  constructor(message = 'Sesión no encontrada.') {
     super(message);
   }
 }

@@ -31,7 +31,7 @@ export class TransactionsService {
       account: { connect: { id: account.id } },
       amount,
       reason,
-      category: { connect: { id: category?.id } },
+      ...(category && { category: { connect: { id: category.id } } }),
     });
 
     return new TransactionEntity(transaction);

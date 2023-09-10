@@ -62,7 +62,7 @@ model Currency {
 model Account {
   id            Int      @id @default(autoincrement())
   name          String   @unique
-  accountNumber String?  @unique @map("account_number")
+  accountNumber String   @map("account_number")
   balance       Int      @default(0)
   color         String?
   userId        Int      @map("user_id")

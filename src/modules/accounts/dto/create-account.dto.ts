@@ -15,8 +15,7 @@ export class CreateAccountDto {
 
   @ApiPropertyOptional()
   @IsString()
-  @IsOptional()
-  accountNumber?: string;
+  accountNumber: string;
 
   @ApiPropertyOptional()
   @IsInt()
