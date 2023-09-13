@@ -2,19 +2,23 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { AccountsService } from '../accounts/accounts.service';
 import { CategoriesService } from '../categories/categories.service';
 import { CategoryEntity } from '../categories/entities/category.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionEntity } from './entities/transaction.entity';
-import { TransactionsRepository } from './transactions.repository';
 
 @Injectable()
 export class TransactionsService {
+  private readonly transactions;
+
   constructor(
-    private readonly transactionsRepository: TransactionsRepository,
+    private readonly prismaService: PrismaService,
     private readonly categoriesService: CategoriesService,
     @Inject(forwardRef(() => AccountsService))
     private readonly accountsService: AccountsService,
-  ) {}
+  ) {
+    this.transactions = this.prismaService.transaction;
+  }
 
   async create(dto: CreateTransactionDto) {
     const { type, accountId, amount, reason, categoryId } = dto;
@@ -26,19 +30,24 @@ export class TransactionsService {
       category = await this.categoriesService.findOne(categoryId);
     }
 
-    const transaction = await this.transactionsRepository.create({
-      type,
-      account: { connect: { id: account.id } },
-      amount,
-      reason,
-      ...(category && { category: { connect: { id: category.id } } }),
+    const transaction = await this.transactions.create({
+      data: {
+        type,
+        account: { connect: { id: account.id } },
+        amount,
+        reason,
+        ...(category && { category: { connect: { id: category.id } } }),
+      },
+      include: { account: true, category: true },
     });
 
     return new TransactionEntity(transaction);
   }
 
   async findAll() {
-    const transactions = await this.transactionsRepository.findAll();
+    const transactions = await this.transactions.findMany({
+      include: { account: true },
+    });
 
     return transactions.map(
       (transaction) => new TransactionEntity(transaction),
@@ -46,19 +55,32 @@ export class TransactionsService {
   }
 
   async findOne(id: number) {
-    const transaction = await this.transactionsRepository.findOne(id);
+    const transaction = await this.transactions.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        account: true,
+      },
+    });
     if (!transaction) throw new Error();
 
     return new TransactionEntity(transaction);
   }
 
   async update(id: number, dto: UpdateTransactionDto) {
-    const updated = await this.transactionsRepository.update(id, dto);
+    const updated = await this.transactions.update({
+      where: { id },
+      data: dto,
+      include: {
+        category: true,
+        account: true,
+      },
+    });
 
     return new TransactionEntity(updated);
   }
 
   async remove(id: number) {
-    await this.transactionsRepository.remove(id);
+    await this.transactions.delete({ where: { id } });
   }
 }
