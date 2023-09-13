@@ -13,7 +13,7 @@ export class CategoryOwnershipGuard implements CanActivate {
     const id = +request.params.id;
     const category = await this.categoriesService.findOne(id);
 
-    const owns = category.userId === request.session?.userId;
+    const owns = category.userId === request.userId;
     if (!owns) {
       throw new OwnershipViolationException(
         'No eres el dueño de esta categoría.',

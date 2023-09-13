@@ -8,12 +8,13 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionsService } from './transactions.service';
 
 @Controller('transactions')
+@ApiBearerAuth()
 @ApiTags('Transacciones')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}

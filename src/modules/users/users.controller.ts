@@ -1,27 +1,27 @@
 import { Body, Controller, Delete, Get, Patch } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Session } from '../sessions/decorators/session.decorator';
-import { SessionEntity } from '../sessions/entities/session.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UserId } from './decorators/user-id.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
+@ApiBearerAuth()
 @ApiTags('Usuarios')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  findOne(@Session() session: SessionEntity) {
-    return this.usersService.findOne(session.userId);
+  findOne(@UserId() userId: number) {
+    return this.usersService.findOne(userId);
   }
 
   @Patch('me')
-  update(@Session() session: SessionEntity, @Body() dto: UpdateUserDto) {
-    return this.usersService.update(session.userId, dto);
+  update(@UserId() userId: number, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(userId, dto);
   }
 
   @Delete('me')
-  remove(@Session() session: SessionEntity) {
-    return this.usersService.remove(session.userId);
+  remove(@UserId() userId: number) {
+    return this.usersService.remove(userId);
   }
 }

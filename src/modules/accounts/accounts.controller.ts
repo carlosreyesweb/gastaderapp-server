@@ -9,27 +9,27 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Session } from '../sessions/decorators/session.decorator';
-import { SessionEntity } from '../sessions/entities/session.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UserId } from '../users/decorators/user-id.decorator';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { AccountOwnershipGuard } from './guards/account-ownership/account-ownership.guard';
 
 @Controller('accounts')
+@ApiBearerAuth()
 @ApiTags('Cuentas')
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
 
   @Post()
-  create(@Session() session: SessionEntity, @Body() dto: CreateAccountDto) {
-    return this.accountsService.create(session.userId, dto);
+  create(@UserId() userId: number, @Body() dto: CreateAccountDto) {
+    return this.accountsService.create(userId, dto);
   }
 
   @Get()
-  findAll(@Session() session: SessionEntity) {
-    return this.accountsService.findAll(session.userId);
+  findAll(@UserId() userId: number) {
+    return this.accountsService.findAll(userId);
   }
 
   @Get(':id')

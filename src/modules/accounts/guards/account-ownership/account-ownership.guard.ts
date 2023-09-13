@@ -13,7 +13,7 @@ export class AccountOwnershipGuard implements CanActivate {
     const id = +request.params.id;
     const account = await this.accountsService.findOne(id);
 
-    const owns = account.userId === request.session?.userId;
+    const owns = account.userId === request.userId;
     if (!owns) {
       throw new OwnershipViolationException('No eres el dueño de esta cuenta.');
     }

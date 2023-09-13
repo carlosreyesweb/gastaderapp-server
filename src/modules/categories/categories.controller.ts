@@ -9,27 +9,27 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Session } from '../sessions/decorators/session.decorator';
-import { SessionEntity } from '../sessions/entities/session.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UserId } from '../users/decorators/user-id.decorator';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryOwnershipGuard } from './guards/category-ownership/category-ownership.guard';
 
 @Controller('categories')
+@ApiBearerAuth()
 @ApiTags('Categorías')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  create(@Session() session: SessionEntity, @Body() dto: CreateCategoryDto) {
-    return this.categoriesService.create(session.userId, dto);
+  create(@UserId() userId: number, @Body() dto: CreateCategoryDto) {
+    return this.categoriesService.create(userId, dto);
   }
 
   @Get()
-  findAll(@Session() session: SessionEntity) {
-    return this.categoriesService.findAll(session.userId);
+  findAll(@UserId() userId: number) {
+    return this.categoriesService.findAll(userId);
   }
 
   @Get(':id')

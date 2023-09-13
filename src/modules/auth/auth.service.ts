@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { PasswordsService } from '../passwords/passwords.service';
-import { SessionsService } from '../sessions/sessions.service';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -8,7 +8,7 @@ import { RegisterDto } from './dto/register.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly sessionsService: SessionsService,
+    private readonly jwtService: JwtService,
     private readonly passwordsService: PasswordsService,
     private readonly usersService: UsersService,
   ) {}
@@ -20,7 +20,9 @@ export class AuthService {
 
     await this.passwordsService.compare(password, user.passwordHash);
 
-    return this.sessionsService.create(user.id);
+    const accessToken = await this._generateAccessToken(user.id);
+
+    return accessToken;
   }
 
   async register(dto: RegisterDto) {
@@ -33,14 +35,12 @@ export class AuthService {
       password,
     });
 
-    return this.sessionsService.create(user.id);
+    const accessToken = await this._generateAccessToken(user.id);
+
+    return accessToken;
   }
 
-  logout(sessionId: string) {
-    return this.sessionsService.remove(sessionId);
-  }
-
-  logoutAll(userId: number) {
-    return this.sessionsService.removeAll(userId);
+  private _generateAccessToken(userId: number) {
+    return this.jwtService.signAsync({ userId });
   }
 }
