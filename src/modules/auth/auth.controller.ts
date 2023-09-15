@@ -12,17 +12,13 @@ export class AuthController {
 
   @Post('login')
   @SkipAuth()
-  async login(@Body() dto: LoginDto) {
-    const accessToken = await this.authService.login(dto);
-
-    return { accessToken };
+  login(@Body() dto: LoginDto) {
+    return this.authService.login(dto);
   }
 
   @Post('register')
   @SkipAuth()
-  async register(@Body() dto: RegisterDto) {
-    const accessToken = await this.authService.register(dto);
-
-    return { accessToken };
+  register(@Body() dto: RegisterDto) {
+    return this.authService.register(dto);
   }
 }

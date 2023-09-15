@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordsService } from '../passwords/passwords.service';
+import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -22,7 +23,7 @@ export class AuthService {
 
     const accessToken = await this._generateAccessToken(user.id);
 
-    return accessToken;
+    return { user: new UserEntity(user), accessToken };
   }
 
   async register(dto: RegisterDto) {
@@ -37,7 +38,7 @@ export class AuthService {
 
     const accessToken = await this._generateAccessToken(user.id);
 
-    return accessToken;
+    return { user: new UserEntity(user), accessToken };
   }
 
   private _generateAccessToken(userId: number) {
