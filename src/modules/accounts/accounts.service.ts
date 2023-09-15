@@ -80,11 +80,29 @@ export class AccountsService {
   }
 
   async update(id: number, dto: UpdateAccountDto) {
+    const old = await this.accounts.findUnique({ where: { id } });
+    if (!old) throw new AccountNotFoundException();
+
     const updated = await this.accounts.update({
-      where: { id },
+      where: { id: old.id },
       data: dto,
       include: { currency: true, transactions: true },
     });
+
+    if (dto.balance) {
+      await this.transactionsService.create({
+        type:
+          old.balance > dto.balance
+            ? TransactionType.OUTCOME
+            : TransactionType.INCOME,
+        amount: dto.balance,
+        accountId: updated.id,
+        reason:
+          old.balance > dto.balance
+            ? '(Retiro sin justificar)'
+            : '(Ingreso sin justificar)',
+      });
+    }
 
     return new AccountEntity(updated);
   }
