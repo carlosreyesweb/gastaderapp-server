@@ -1,5 +1,5 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { TransactionType } from '@prisma/client';
+import { Prisma, TransactionType } from '@prisma/client';
 import { AccountsService } from '../accounts/accounts.service';
 import { CategoriesService } from '../categories/categories.service';
 import { CategoryEntity } from '../categories/entities/category.entity';
@@ -11,6 +11,10 @@ import { TransactionEntity } from './entities/transaction.entity';
 @Injectable()
 export class TransactionsService {
   private readonly transactions;
+  private readonly include: Prisma.TransactionInclude = {
+    account: { include: { currency: true } },
+    category: true,
+  };
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -39,15 +43,17 @@ export class TransactionsService {
         reason,
         ...(category && { category: { connect: { id: category.id } } }),
       },
-      include: { account: true, category: true },
+      include: this.include,
     });
 
     return new TransactionEntity(transaction);
   }
 
-  async findAll() {
+  async findAll(userId: number) {
     const transactions = await this.transactions.findMany({
-      include: { account: true },
+      where: { account: { userId } },
+      include: this.include,
+      orderBy: { updatedAt: 'desc' },
     });
 
     return transactions.map(
@@ -58,10 +64,7 @@ export class TransactionsService {
   async findOne(id: number) {
     const transaction = await this.transactions.findUnique({
       where: { id },
-      include: {
-        category: true,
-        account: true,
-      },
+      include: this.include,
     });
     if (!transaction) throw new Error();
 
@@ -103,10 +106,7 @@ export class TransactionsService {
     const updated = await this.transactions.update({
       where: { id },
       data: dto,
-      include: {
-        category: true,
-        account: true,
-      },
+      include: this.include,
     });
 
     return new TransactionEntity(updated);

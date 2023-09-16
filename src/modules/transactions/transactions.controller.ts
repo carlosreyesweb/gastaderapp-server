@@ -3,14 +3,18 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
-  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UserId } from '../users/decorators/user-id.decorator';
+import { Transaction } from './decorators/transaction.decorator';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { TransactionEntity } from './entities/transaction.entity';
+import { CreateTransactionGuard } from './guards/create-transaction/create-transaction.guard';
+import { TransactionOwnershipGuard } from './guards/transaction-ownership/transaction-ownership.guard';
 import { TransactionsService } from './transactions.service';
 
 @Controller('transactions')
@@ -20,30 +24,31 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post()
+  @UseGuards(CreateTransactionGuard)
   create(@Body() dto: CreateTransactionDto) {
     return this.transactionsService.create(dto);
   }
 
   @Get()
-  findAll() {
-    return this.transactionsService.findAll();
+  findAll(@UserId() userId: number) {
+    return this.transactionsService.findAll(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.transactionsService.findOne(id);
+  @UseGuards(TransactionOwnershipGuard)
+  findOne(@Transaction() transaction: TransactionEntity) {
+    return transaction;
   }
 
   @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateTransactionDto,
-  ) {
+  @UseGuards(TransactionOwnershipGuard)
+  update(@Transaction('id') id: number, @Body() dto: UpdateTransactionDto) {
     return this.transactionsService.update(id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  @UseGuards(TransactionOwnershipGuard)
+  remove(@Transaction('id') id: number) {
     return this.transactionsService.remove(id);
   }
 }

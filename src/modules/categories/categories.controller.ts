@@ -40,13 +40,13 @@ export class CategoriesController {
 
   @Patch(':id')
   @UseGuards(CategoryOwnershipGuard)
-  update(@Category() category: CategoryEntity, @Body() dto: UpdateCategoryDto) {
-    return this.categoriesService.update(category.id, dto);
+  update(@Category('id') id: number, @Body() dto: UpdateCategoryDto) {
+    return this.categoriesService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(CategoryOwnershipGuard)
-  remove(@Category() category: CategoryEntity) {
-    return this.categoriesService.remove(category.id);
+  remove(@Category('id') id: number) {
+    return this.categoriesService.remove(id);
   }
 }

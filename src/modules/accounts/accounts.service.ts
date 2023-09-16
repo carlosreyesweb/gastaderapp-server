@@ -100,24 +100,26 @@ export class AccountsService {
   async update(id: number, dto: UpdateAccountDto) {
     const { balance: newBalance, ...data } = dto;
 
-    if (newBalance) {
+    if (typeof newBalance !== 'undefined') {
       const currentBalance = await this.transactionsService.balanceOf(id);
 
-      await this.transactionsService.create({
-        type:
-          newBalance > currentBalance
-            ? TransactionType.INCOME
-            : TransactionType.OUTCOME,
-        amount:
-          newBalance > currentBalance
-            ? newBalance - currentBalance
-            : currentBalance - newBalance,
-        accountId: id,
-        reason:
-          newBalance > currentBalance
-            ? '(Ingreso sin justificar)'
-            : '(Retiro sin justificar)',
-      });
+      if (newBalance !== currentBalance) {
+        await this.transactionsService.create({
+          type:
+            newBalance > currentBalance
+              ? TransactionType.INCOME
+              : TransactionType.OUTCOME,
+          amount:
+            newBalance > currentBalance
+              ? newBalance - currentBalance
+              : currentBalance - newBalance,
+          accountId: id,
+          reason:
+            newBalance > currentBalance
+              ? '(Ingreso sin justificar)'
+              : '(Retiro sin justificar)',
+        });
+      }
     }
 
     const updated = await this.accounts.update({

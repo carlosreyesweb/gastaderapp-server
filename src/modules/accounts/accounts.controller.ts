@@ -40,13 +40,13 @@ export class AccountsController {
 
   @Patch(':id')
   @UseGuards(AccountOwnershipGuard)
-  update(@Account() account: AccountEntity, @Body() dto: UpdateAccountDto) {
-    return this.accountsService.update(account.id, dto);
+  update(@Account('id') id: number, @Body() dto: UpdateAccountDto) {
+    return this.accountsService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(AccountOwnershipGuard)
-  remove(@Account() account: AccountEntity) {
-    return this.accountsService.remove(account.id);
+  remove(@Account('id') id: number) {
+    return this.accountsService.remove(id);
   }
 }

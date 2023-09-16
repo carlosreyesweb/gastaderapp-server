@@ -3,7 +3,6 @@ import { seedAccounts } from './accounts';
 import { seedCategories } from './categories';
 import { seedCurrencies } from './currencies';
 import { seedExchangeRates } from './exchange-rates';
-import { seedTransactions } from './transactions';
 import { seedUsers } from './users';
 
 async function seed() {
@@ -15,7 +14,6 @@ async function seed() {
   await seedCurrencies(client);
   await seedAccounts(client);
   await seedCategories(client);
-  await seedTransactions(client);
   await seedExchangeRates(client);
 
   console.log('----> Database seeded!');
