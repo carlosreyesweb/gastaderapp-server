@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
-  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -12,8 +10,10 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserId } from '../users/decorators/user-id.decorator';
 import { CategoriesService } from './categories.service';
+import { Category } from './decorators/category.decorator';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryEntity } from './entities/category.entity';
 import { CategoryOwnershipGuard } from './guards/category-ownership/category-ownership.guard';
 
 @Controller('categories')
@@ -34,22 +34,19 @@ export class CategoriesController {
 
   @Get(':id')
   @UseGuards(CategoryOwnershipGuard)
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.categoriesService.findOne(id);
+  findOne(@Category() category: CategoryEntity) {
+    return category;
   }
 
   @Patch(':id')
   @UseGuards(CategoryOwnershipGuard)
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateCategoryDto,
-  ) {
-    return this.categoriesService.update(id, dto);
+  update(@Category() category: CategoryEntity, @Body() dto: UpdateCategoryDto) {
+    return this.categoriesService.update(category.id, dto);
   }
 
   @Delete(':id')
   @UseGuards(CategoryOwnershipGuard)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.categoriesService.remove(id);
+  remove(@Category() category: CategoryEntity) {
+    return this.categoriesService.remove(category.id);
   }
 }

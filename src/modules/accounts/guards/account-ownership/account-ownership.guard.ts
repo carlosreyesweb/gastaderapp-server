@@ -18,6 +18,8 @@ export class AccountOwnershipGuard implements CanActivate {
       throw new OwnershipViolationException('No eres el dueño de esta cuenta.');
     }
 
+    request.account = account;
+
     return true;
   }
 }

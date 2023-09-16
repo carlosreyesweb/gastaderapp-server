@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
-  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -12,8 +10,10 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserId } from '../users/decorators/user-id.decorator';
 import { AccountsService } from './accounts.service';
+import { Account } from './decorators/account.decorator';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import { AccountEntity } from './entities/account.entity';
 import { AccountOwnershipGuard } from './guards/account-ownership/account-ownership.guard';
 
 @Controller('accounts')
@@ -34,19 +34,19 @@ export class AccountsController {
 
   @Get(':id')
   @UseGuards(AccountOwnershipGuard)
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.accountsService.findOne(id);
+  findOne(@Account() account: AccountEntity) {
+    return account;
   }
 
   @Patch(':id')
   @UseGuards(AccountOwnershipGuard)
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateAccountDto) {
-    return this.accountsService.update(id, dto);
+  update(@Account() account: AccountEntity, @Body() dto: UpdateAccountDto) {
+    return this.accountsService.update(account.id, dto);
   }
 
   @Delete(':id')
   @UseGuards(AccountOwnershipGuard)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.accountsService.remove(id);
+  remove(@Account() account: AccountEntity) {
+    return this.accountsService.remove(account.id);
   }
 }

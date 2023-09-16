@@ -20,6 +20,8 @@ export class CategoryOwnershipGuard implements CanActivate {
       );
     }
 
+    request.category = category;
+
     return true;
   }
 }
