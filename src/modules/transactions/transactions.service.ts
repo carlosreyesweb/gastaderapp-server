@@ -1,4 +1,5 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { TransactionType } from '@prisma/client';
 import { AccountsService } from '../accounts/accounts.service';
 import { CategoriesService } from '../categories/categories.service';
 import { CategoryEntity } from '../categories/entities/category.entity';
@@ -65,6 +66,37 @@ export class TransactionsService {
     if (!transaction) throw new Error();
 
     return new TransactionEntity(transaction);
+  }
+
+  async balances(accountIds: number[]): Promise<Record<number, number>> {
+    const balances = await Promise.all(
+      accountIds.map((accountId) => this.balanceOf(accountId)),
+    );
+
+    return balances.reduce((acc, balance, index) => {
+      return {
+        ...acc,
+        [accountIds[index]]: balance,
+      };
+    }, {});
+  }
+
+  async balanceOf(accountId: number) {
+    const {
+      _sum: { amount: incomes },
+    } = await this.transactions.aggregate({
+      where: { accountId, type: TransactionType.INCOME },
+      _sum: { amount: true },
+    });
+
+    const {
+      _sum: { amount: outcomes },
+    } = await this.transactions.aggregate({
+      where: { accountId, type: TransactionType.OUTCOME },
+      _sum: { amount: true },
+    });
+
+    return (incomes ?? 0) - (outcomes ?? 0);
   }
 
   async update(id: number, dto: UpdateTransactionDto) {

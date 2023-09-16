@@ -1,5 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { TransactionType } from '@prisma/client';
+import { merge } from 'lodash';
 import { CurrenciesService } from '../currencies/currencies.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TransactionsService } from '../transactions/transactions.service';
@@ -38,7 +39,6 @@ export class AccountsService {
       data: {
         name,
         accountNumber,
-        balance,
         color,
         currency: { connect: { id: currency.id } },
         user: { connect: { id: userId } },
@@ -49,12 +49,18 @@ export class AccountsService {
     });
 
     if (balance) {
-      await this.transactionsService.create({
+      const initialTransaction = await this.transactionsService.create({
         type: TransactionType.INCOME,
         amount: balance,
         accountId: account.id,
         reason: 'Saldo inicial',
       });
+
+      const accountWithInitialBalance = merge({}, account, {
+        balance: initialTransaction.amount,
+      });
+
+      return new AccountEntity(accountWithInitialBalance);
     }
 
     return new AccountEntity(account);
@@ -66,7 +72,15 @@ export class AccountsService {
       include: { currency: true },
     });
 
-    return accounts.map((account) => new AccountEntity(account));
+    const balances = await this.transactionsService.balances(
+      accounts.map((acc) => acc.id),
+    );
+
+    const accountsWithBalance = accounts.map((account) =>
+      merge({}, account, { balance: balances[account.id] }),
+    );
+
+    return accountsWithBalance.map((account) => new AccountEntity(account));
   }
 
   async findOne(id: number) {
@@ -76,35 +90,49 @@ export class AccountsService {
     });
     if (!account) throw new AccountNotFoundException();
 
-    return new AccountEntity(account);
+    const balance = await this.transactionsService.balanceOf(account.id);
+
+    const accountWithBalance = merge({}, account, { balance });
+
+    return new AccountEntity(accountWithBalance);
   }
 
   async update(id: number, dto: UpdateAccountDto) {
-    const old = await this.accounts.findUnique({ where: { id } });
-    if (!old) throw new AccountNotFoundException();
+    const { balance: newBalance, ...data } = dto;
 
-    const updated = await this.accounts.update({
-      where: { id: old.id },
-      data: dto,
-      include: { currency: true, transactions: true },
-    });
+    if (newBalance) {
+      const currentBalance = await this.transactionsService.balanceOf(id);
 
-    if (dto.balance) {
       await this.transactionsService.create({
         type:
-          old.balance > dto.balance
-            ? TransactionType.OUTCOME
-            : TransactionType.INCOME,
-        amount: dto.balance,
-        accountId: updated.id,
+          newBalance > currentBalance
+            ? TransactionType.INCOME
+            : TransactionType.OUTCOME,
+        amount:
+          newBalance > currentBalance
+            ? newBalance - currentBalance
+            : currentBalance - newBalance,
+        accountId: id,
         reason:
-          old.balance > dto.balance
-            ? '(Retiro sin justificar)'
-            : '(Ingreso sin justificar)',
+          newBalance > currentBalance
+            ? '(Ingreso sin justificar)'
+            : '(Retiro sin justificar)',
       });
     }
 
-    return new AccountEntity(updated);
+    const updated = await this.accounts.update({
+      where: { id },
+      data,
+      include: { currency: true, transactions: true },
+    });
+
+    const balance = await this.transactionsService.balanceOf(id);
+
+    const updatedAccountWithBalance = merge({}, updated, {
+      balance,
+    });
+
+    return new AccountEntity(updatedAccountWithBalance);
   }
 
   async remove(id: number) {

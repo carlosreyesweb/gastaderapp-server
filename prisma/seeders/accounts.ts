@@ -8,7 +8,6 @@ export async function seedAccounts(client: PrismaClient) {
       accountNumber: '0105-0001-21-1000000000',
       currencyId: 2,
       userId: 1,
-      balance: 5000,
     },
     {
       id: 2,

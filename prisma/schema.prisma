@@ -51,7 +51,6 @@ model Account {
   id            Int      @id @default(autoincrement())
   name          String   @unique
   accountNumber String   @map("account_number")
-  balance       Int      @default(0)
   color         String?
   userId        Int      @map("user_id")
   currencyId    Int      @map("currency_id")

@@ -8,7 +8,7 @@ export class AccountEntity implements Account {
   id: number;
   name: string;
   accountNumber: string;
-  balance: number;
+  balance?: number;
   color: string | null;
 
   @Exclude()

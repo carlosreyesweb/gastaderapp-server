@@ -19,7 +19,6 @@ export class CreateAccountDto {
 
   @ApiPropertyOptional()
   @IsInt()
-  @IsPositive()
   @IsOptional()
   balance?: number;
 
