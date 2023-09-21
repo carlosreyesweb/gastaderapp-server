@@ -20,7 +20,6 @@ enum TransactionType {
 model User {
   id           Int      @id @default(autoincrement())
   name         String
-  username     String   @unique
   email        String   @unique
   passwordHash String   @map("password_hash")
   role         Role     @default(USER)

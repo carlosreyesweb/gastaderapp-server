@@ -19,21 +19,17 @@ export class UsersService {
   }
 
   async create(dto: RegisterDto) {
-    const { name, username, email, password } = dto;
+    const { name, email, password } = dto;
 
     const existentByEmail = await this.users.findUnique({
       where: { email },
     });
     if (existentByEmail) throw new UserAlreadyExistsException(email);
-    const existentByUsername = await this.users.findUnique({
-      where: { username },
-    });
-    if (existentByUsername) throw new UserAlreadyExistsException(username);
 
     const passwordHash = await this.passwordsService.hash(password);
 
     const user = await this.users.create({
-      data: { name, username, email, passwordHash },
+      data: { name, email, passwordHash },
     });
 
     return new UserEntity(user);
@@ -63,19 +59,8 @@ export class UsersService {
     return new UserEntity(user);
   }
 
-  async findByUsername(username: string) {
-    const user = await this.users.findUnique({
-      where: { username },
-    });
-    if (!user) {
-      throw new UserNotFoundException(`El usuario ${username} no existe.`);
-    }
-
-    return new UserEntity(user);
-  }
-
   async update(id: number, dto: UpdateUserDto) {
-    const { password, name, email, username } = dto;
+    const { password, name, email } = dto;
 
     if (email) {
       const existentByEmail = await this.users.findUnique({
@@ -83,15 +68,6 @@ export class UsersService {
       });
       if (existentByEmail && existentByEmail.id !== id) {
         throw new UserAlreadyExistsException(email);
-      }
-    }
-
-    if (username) {
-      const existentByUsername = await this.users.findUnique({
-        where: { username },
-      });
-      if (existentByUsername && existentByUsername.id !== id) {
-        throw new UserAlreadyExistsException(username);
       }
     }
 
@@ -105,7 +81,6 @@ export class UsersService {
       data: {
         name,
         email,
-        username,
         passwordHash,
       },
     });
