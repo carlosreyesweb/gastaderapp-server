@@ -36,7 +36,6 @@ model Currency {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   symbol    String   @unique
-  icon      String   @unique
   createdAt DateTime @default(now()) @map("created_at")
 
   accounts     Account[]
