@@ -14,7 +14,7 @@ export class CurrenciesController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.currenciesService.findOne(id);
   }
 }

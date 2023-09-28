@@ -1,18 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNumber, IsPositive } from 'class-validator';
+import { IsInt, IsNumber, IsPositive, IsUUID } from 'class-validator';
 
 export class CreateExchangeRateDto {
   @ApiProperty()
-  @IsNumber()
-  @IsInt()
-  @IsPositive()
-  fromCurrencyId: number;
+  @IsUUID()
+  fromCurrencyId: string;
 
   @ApiProperty()
-  @IsNumber()
-  @IsInt()
-  @IsPositive()
-  toCurrencyId: number;
+  @IsUUID()
+  toCurrencyId: string;
 
   @ApiProperty()
   @IsNumber()

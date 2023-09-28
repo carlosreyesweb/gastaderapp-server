@@ -41,7 +41,7 @@ export class UsersService {
     return users.map((user) => new UserEntity(user));
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.users.findUnique({ where: { id } });
     if (!user) throw new UserNotFoundException();
 
@@ -59,7 +59,7 @@ export class UsersService {
     return new UserEntity(user);
   }
 
-  async update(id: number, dto: UpdateUserDto) {
+  async update(id: string, dto: UpdateUserDto) {
     const { password, name, email } = dto;
 
     if (email) {
@@ -88,7 +88,7 @@ export class UsersService {
     return new UserEntity(updated);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.users.delete({ where: { id } });
   }
 }

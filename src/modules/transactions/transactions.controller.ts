@@ -30,7 +30,7 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll(@UserId() userId: number) {
+  findAll(@UserId() userId: string) {
     return this.transactionsService.findAll(userId);
   }
 
@@ -42,13 +42,13 @@ export class TransactionsController {
 
   @Patch(':id')
   @UseGuards(TransactionOwnershipGuard)
-  update(@Transaction('id') id: number, @Body() dto: UpdateTransactionDto) {
+  update(@Transaction('id') id: string, @Body() dto: UpdateTransactionDto) {
     return this.transactionsService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(TransactionOwnershipGuard)
-  remove(@Transaction('id') id: number) {
+  remove(@Transaction('id') id: string) {
     return this.transactionsService.remove(id);
   }
 }

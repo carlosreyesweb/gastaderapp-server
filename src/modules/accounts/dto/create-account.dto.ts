@@ -3,8 +3,8 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
-  IsPositive,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateAccountDto {
@@ -13,7 +13,7 @@ export class CreateAccountDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsString()
   accountNumber: string;
 
@@ -28,7 +28,6 @@ export class CreateAccountDto {
   color?: string;
 
   @ApiProperty()
-  @IsInt()
-  @IsPositive()
-  currencyId: number;
+  @IsUUID()
+  currencyId: string;
 }

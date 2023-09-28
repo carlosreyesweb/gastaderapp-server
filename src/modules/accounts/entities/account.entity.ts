@@ -5,17 +5,17 @@ import { TransactionEntity } from 'src/modules/transactions/entities/transaction
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 
 export class AccountEntity implements Account {
-  id: number;
+  id: string;
   name: string;
   accountNumber: string;
   balance?: number;
   color: string | null;
 
   @Exclude()
-  currencyId: number;
+  currencyId: string;
 
   @Exclude()
-  userId: number;
+  userId: string;
 
   currency?: CurrencyEntity;
   user?: UserEntity;

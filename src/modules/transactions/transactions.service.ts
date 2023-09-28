@@ -49,7 +49,7 @@ export class TransactionsService {
     return new TransactionEntity(transaction);
   }
 
-  async findAll(userId: number) {
+  async findAll(userId: string) {
     const transactions = await this.transactions.findMany({
       where: { account: { userId } },
       include: this.include,
@@ -61,7 +61,7 @@ export class TransactionsService {
     );
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const transaction = await this.transactions.findUnique({
       where: { id },
       include: this.include,
@@ -71,7 +71,7 @@ export class TransactionsService {
     return new TransactionEntity(transaction);
   }
 
-  async balances(accountIds: number[]): Promise<Record<number, number>> {
+  async balances(accountIds: string[]): Promise<Record<string, number>> {
     const balances = await Promise.all(
       accountIds.map((accountId) => this.balanceOf(accountId)),
     );
@@ -84,7 +84,7 @@ export class TransactionsService {
     }, {});
   }
 
-  async balanceOf(accountId: number) {
+  async balanceOf(accountId: string) {
     const {
       _sum: { amount: incomes },
     } = await this.transactions.aggregate({
@@ -102,7 +102,7 @@ export class TransactionsService {
     return (incomes ?? 0) - (outcomes ?? 0);
   }
 
-  async update(id: number, dto: UpdateTransactionDto) {
+  async update(id: string, dto: UpdateTransactionDto) {
     const updated = await this.transactions.update({
       where: { id },
       data: dto,
@@ -112,7 +112,7 @@ export class TransactionsService {
     return new TransactionEntity(updated);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.transactions.delete({ where: { id } });
   }
 }

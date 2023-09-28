@@ -10,7 +10,7 @@ export class AccountOwnershipGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const id = +request.params.id;
+    const id = request.params.id;
     const account = await this.accountsService.findOne(id);
 
     const owns = account.userId === request.userId;

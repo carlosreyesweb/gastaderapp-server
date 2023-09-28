@@ -4,12 +4,11 @@ import { TransactionEntity } from 'src/modules/transactions/entities/transaction
 
 declare module 'express' {
   interface Request {
-    userId?: number;
+    userId?: string;
     account?: AccountEntity;
     category?: CategoryEntity;
     transaction?: TransactionEntity;
   }
 }
 
-export { };
-
+export {};

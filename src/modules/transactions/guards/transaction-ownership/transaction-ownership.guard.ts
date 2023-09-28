@@ -10,7 +10,7 @@ export class TransactionOwnershipGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const id = +request.params.id;
+    const id = request.params.id;
     const transaction = await this.transactionsService.findOne(id);
 
     const owns = transaction.account?.userId === request.userId;

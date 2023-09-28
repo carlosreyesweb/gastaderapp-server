@@ -3,14 +3,14 @@ import { Exclude } from 'class-transformer';
 import { CurrencyEntity } from 'src/modules/currencies/entities/currency.entity';
 
 export class ExchangeRateEntity implements ExchangeRate {
-  id: number;
+  id: string;
   rate: number;
 
   @Exclude()
-  fromCurrencyId: number;
+  fromCurrencyId: string;
 
   @Exclude()
-  toCurrencyId: number;
+  toCurrencyId: string;
 
   fromCurrency?: CurrencyEntity;
   toCurrency?: CurrencyEntity;

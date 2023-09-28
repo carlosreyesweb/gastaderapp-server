@@ -23,12 +23,12 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  create(@UserId() userId: number, @Body() dto: CreateCategoryDto) {
+  create(@UserId() userId: string, @Body() dto: CreateCategoryDto) {
     return this.categoriesService.create(userId, dto);
   }
 
   @Get()
-  findAll(@UserId() userId: number) {
+  findAll(@UserId() userId: string) {
     return this.categoriesService.findAll(userId);
   }
 
@@ -40,13 +40,13 @@ export class CategoriesController {
 
   @Patch(':id')
   @UseGuards(CategoryOwnershipGuard)
-  update(@Category('id') id: number, @Body() dto: UpdateCategoryDto) {
+  update(@Category('id') id: string, @Body() dto: UpdateCategoryDto) {
     return this.categoriesService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(CategoryOwnershipGuard)
-  remove(@Category('id') id: number) {
+  remove(@Category('id') id: string) {
     return this.categoriesService.remove(id);
   }
 }

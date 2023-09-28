@@ -23,7 +23,7 @@ export class AccountsService {
     this.accounts = this.prismaService.account;
   }
 
-  async create(userId: number, dto: CreateAccountDto) {
+  async create(userId: string, dto: CreateAccountDto) {
     const { currencyId, name, accountNumber, balance, color } = dto;
 
     const existent = await this.accounts.findUnique({
@@ -66,7 +66,7 @@ export class AccountsService {
     return new AccountEntity(account);
   }
 
-  async findAll(userId: number) {
+  async findAll(userId: string) {
     const accounts = await this.accounts.findMany({
       where: { userId },
       include: { currency: true },
@@ -83,7 +83,7 @@ export class AccountsService {
     return accountsWithBalance.map((account) => new AccountEntity(account));
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const account = await this.accounts.findUnique({
       where: { id },
       include: { currency: true, transactions: true },
@@ -97,7 +97,7 @@ export class AccountsService {
     return new AccountEntity(accountWithBalance);
   }
 
-  async update(id: number, dto: UpdateAccountDto) {
+  async update(id: string, dto: UpdateAccountDto) {
     const { balance: newBalance, ...data } = dto;
 
     if (typeof newBalance !== 'undefined') {
@@ -137,7 +137,7 @@ export class AccountsService {
     return new AccountEntity(updatedAccountWithBalance);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.accounts.delete({ where: { id } });
   }
 }

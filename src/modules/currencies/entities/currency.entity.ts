@@ -1,6 +1,6 @@
 import { Currency } from '@prisma/client';
 export class CurrencyEntity implements Currency {
-  id: number;
+  id: string;
   name: string;
   symbol: string;
   createdAt: Date;

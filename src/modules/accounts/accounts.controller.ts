@@ -23,12 +23,12 @@ export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
 
   @Post()
-  create(@UserId() userId: number, @Body() dto: CreateAccountDto) {
+  create(@UserId() userId: string, @Body() dto: CreateAccountDto) {
     return this.accountsService.create(userId, dto);
   }
 
   @Get()
-  findAll(@UserId() userId: number) {
+  findAll(@UserId() userId: string) {
     return this.accountsService.findAll(userId);
   }
 
@@ -40,13 +40,13 @@ export class AccountsController {
 
   @Patch(':id')
   @UseGuards(AccountOwnershipGuard)
-  update(@Account('id') id: number, @Body() dto: UpdateAccountDto) {
+  update(@Account('id') id: string, @Body() dto: UpdateAccountDto) {
     return this.accountsService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(AccountOwnershipGuard)
-  remove(@Account('id') id: number) {
+  remove(@Account('id') id: string) {
     return this.accountsService.remove(id);
   }
 }

@@ -11,17 +11,17 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  findOne(@UserId() userId: number) {
+  findOne(@UserId() userId: string) {
     return this.usersService.findOne(userId);
   }
 
   @Patch('me')
-  update(@UserId() userId: number, @Body() dto: UpdateUserDto) {
+  update(@UserId() userId: string, @Body() dto: UpdateUserDto) {
     return this.usersService.update(userId, dto);
   }
 
   @Delete('me')
-  remove(@UserId() userId: number) {
+  remove(@UserId() userId: string) {
     return this.usersService.remove(userId);
   }
 }

@@ -13,7 +13,7 @@ export class CategoriesService {
     this.categories = this.prismaService.category;
   }
 
-  async create(userId: number, dto: CreateCategoryDto) {
+  async create(userId: string, dto: CreateCategoryDto) {
     const { name, description, color } = dto;
 
     const category = await this.categories.create({
@@ -28,7 +28,7 @@ export class CategoriesService {
     return new CategoryEntity(category);
   }
 
-  async findAll(userId: number) {
+  async findAll(userId: string) {
     const categories = await this.categories.findMany({
       where: { userId },
     });
@@ -36,7 +36,7 @@ export class CategoriesService {
     return categories.map((category) => new CategoryEntity(category));
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const category = await this.categories.findUnique({
       where: { id },
       include: { transactions: true },
@@ -46,7 +46,7 @@ export class CategoriesService {
     return new CategoryEntity(category);
   }
 
-  async update(id: number, dto: UpdateCategoryDto) {
+  async update(id: string, dto: UpdateCategoryDto) {
     const updated = await this.categories.update({
       where: { id },
       data: dto,
@@ -56,7 +56,7 @@ export class CategoriesService {
     return new CategoryEntity(updated);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.categories.delete({ where: { id } });
   }
 }

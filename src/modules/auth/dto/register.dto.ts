@@ -8,10 +8,6 @@ export class RegisterDto {
 
   @ApiProperty()
   @IsString()
-  username: string;
-
-  @ApiProperty()
-  @IsString()
   @IsEmail()
   email: string;
 

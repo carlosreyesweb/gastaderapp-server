@@ -27,7 +27,7 @@ export class ExchangeRatesService {
     );
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const exchangeRate = await this.exchangeRates.findUnique({
       where: { id },
       include: this.include,
@@ -37,7 +37,7 @@ export class ExchangeRatesService {
     return new ExchangeRateEntity(exchangeRate);
   }
 
-  async update(id: number, dto: UpdateExchangeRateDto) {
+  async update(id: string, dto: UpdateExchangeRateDto) {
     const updated = await this.exchangeRates.update({
       where: { id },
       data: dto,

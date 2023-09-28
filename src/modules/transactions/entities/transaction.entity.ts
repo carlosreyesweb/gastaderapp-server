@@ -4,16 +4,16 @@ import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
 import { CategoryEntity } from 'src/modules/categories/entities/category.entity';
 
 export class TransactionEntity implements Transaction {
-  id: number;
+  id: string;
   type: TransactionType;
   amount: number;
   reason: string;
 
   @Exclude()
-  categoryId: number | null;
+  categoryId: string | null;
 
   @Exclude()
-  accountId: number;
+  accountId: string;
 
   account?: AccountEntity;
   category?: CategoryEntity | null;

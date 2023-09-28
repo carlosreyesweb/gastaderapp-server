@@ -14,7 +14,7 @@ export class ExchangeRatesController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.exchangeRatesService.findOne(id);
   }
 }

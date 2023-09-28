@@ -17,7 +17,7 @@ export class CurrenciesService {
     return currencies.map((currency) => new CurrencyEntity(currency));
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const currency = await this.currencies.findUnique({ where: { id } });
     if (!currency) throw new CurrencyNotFoundException();
 

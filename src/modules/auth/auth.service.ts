@@ -27,11 +27,10 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
-    const { email, password, name, username } = dto;
+    const { email, password, name } = dto;
 
     const user = await this.usersService.create({
       name,
-      username,
       email,
       password,
     });
@@ -41,7 +40,7 @@ export class AuthService {
     return { user: new UserEntity(user), accessToken };
   }
 
-  private _generateAccessToken(userId: number) {
+  private _generateAccessToken(userId: string) {
     return this.jwtService.signAsync({ userId });
   }
 }

@@ -4,13 +4,13 @@ import { TransactionEntity } from 'src/modules/transactions/entities/transaction
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 
 export class CategoryEntity implements Category {
-  id: number;
+  id: string;
   name: string;
   description: string | null;
   color: string | null;
 
   @Exclude()
-  userId: number;
+  userId: string;
 
   user?: UserEntity;
   transactions?: TransactionEntity[];
