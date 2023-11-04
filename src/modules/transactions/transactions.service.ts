@@ -83,21 +83,18 @@ export class TransactionsService {
   }
 
   async balanceOf(accountId: string) {
-    const {
-      _sum: { amount: incomes },
-    } = await this.transactions.aggregate({
-      where: { accountId, type: TransactionType.INCOME },
-      _sum: { amount: true },
-    });
+    const [incomes, outcomes] = await Promise.all([
+      this.transactions.aggregate({
+        where: { accountId, type: TransactionType.INCOME },
+        _sum: { amount: true },
+      }),
+      this.transactions.aggregate({
+        where: { accountId, type: TransactionType.OUTCOME },
+        _sum: { amount: true },
+      }),
+    ]);
 
-    const {
-      _sum: { amount: outcomes },
-    } = await this.transactions.aggregate({
-      where: { accountId, type: TransactionType.OUTCOME },
-      _sum: { amount: true },
-    });
-
-    return (incomes ?? 0) - (outcomes ?? 0);
+    return (incomes?._sum?.amount ?? 0) - (outcomes?._sum?.amount ?? 0);
   }
 
   async update(id: string, dto: UpdateTransactionDto) {
