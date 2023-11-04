@@ -2,7 +2,6 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Prisma, TransactionType } from '@prisma/client';
 import { AccountsService } from '../accounts/accounts.service';
 import { CategoriesService } from '../categories/categories.service';
-import { CategoryEntity } from '../categories/entities/category.entity';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -30,10 +29,9 @@ export class TransactionsService {
 
     const account = await this.accountsService.findOne(accountId);
 
-    let category: CategoryEntity | undefined;
-    if (categoryId) {
-      category = await this.categoriesService.findOne(categoryId);
-    }
+    const category = categoryId
+      ? await this.categoriesService.findOne(categoryId)
+      : undefined;
 
     const transaction = await this.transactions.create({
       data: {
