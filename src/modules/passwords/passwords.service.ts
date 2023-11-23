@@ -6,6 +6,7 @@ import { PasswordsMismatchException } from './exceptions/passwords-mismatch.exce
 export class PasswordsService {
   hash(password: string) {
     const SALT_ROUNDS = 12;
+
     return hash(password, SALT_ROUNDS);
   }
 

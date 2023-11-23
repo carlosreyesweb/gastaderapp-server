@@ -25,16 +25,13 @@ export class AccountsService {
 
   async create(userId: string, dto: CreateAccountDto) {
     const { currencyId, name, accountNumber, balance, color } = dto;
-
     const existent = await this.accounts.findUnique({
       where: {
         name,
       },
     });
     if (existent) throw new AccountAlreadyExistsException();
-
     const currency = await this.currenciesService.findOne(currencyId);
-
     const account = await this.accounts.create({
       data: {
         name,
@@ -47,7 +44,6 @@ export class AccountsService {
         currency: true,
       },
     });
-
     if (balance) {
       const initialTransaction = await this.transactionsService.create({
         type: TransactionType.INCOME,
@@ -55,7 +51,6 @@ export class AccountsService {
         accountId: account.id,
         reason: 'Saldo inicial',
       });
-
       const accountWithInitialBalance = merge({}, account, {
         balance: initialTransaction.amount,
       });
@@ -71,11 +66,9 @@ export class AccountsService {
       where: { userId },
       include: { currency: true },
     });
-
     const balances = await this.transactionsService.balances(
       accounts.map((acc) => acc.id),
     );
-
     const accountsWithBalance = accounts.map((account) =>
       merge({}, account, { balance: balances[account.id] }),
     );
@@ -89,9 +82,7 @@ export class AccountsService {
       include: { currency: true, transactions: true },
     });
     if (!account) throw new AccountNotFoundException();
-
     const balance = await this.transactionsService.balanceOf(account.id);
-
     const accountWithBalance = merge({}, account, { balance });
 
     return new AccountEntity(accountWithBalance);
@@ -99,10 +90,8 @@ export class AccountsService {
 
   async update(id: string, dto: UpdateAccountDto) {
     const { balance: newBalance, ...data } = dto;
-
     if (typeof newBalance !== 'undefined') {
       const currentBalance = await this.transactionsService.balanceOf(id);
-
       if (newBalance !== currentBalance) {
         await this.transactionsService.create({
           type:
@@ -121,15 +110,12 @@ export class AccountsService {
         });
       }
     }
-
     const updated = await this.accounts.update({
       where: { id },
       data,
       include: { currency: true, transactions: true },
     });
-
     const balance = await this.transactionsService.balanceOf(id);
-
     const updatedAccountWithBalance = merge({}, updated, {
       balance,
     });

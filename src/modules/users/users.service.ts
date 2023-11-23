@@ -20,14 +20,11 @@ export class UsersService {
 
   async create(dto: RegisterDto) {
     const { name, email, password } = dto;
-
     const existentByEmail = await this.users.findUnique({
       where: { email },
     });
     if (existentByEmail) throw new UserAlreadyExistsException(email);
-
     const passwordHash = await this.passwordsService.hash(password);
-
     const user = await this.users.create({
       data: { name, email, passwordHash },
     });
@@ -61,7 +58,6 @@ export class UsersService {
 
   async update(id: string, dto: UpdateUserDto) {
     const { password, name, email } = dto;
-
     if (email) {
       const existentByEmail = await this.users.findUnique({
         where: { email },
@@ -70,12 +66,10 @@ export class UsersService {
         throw new UserAlreadyExistsException(email);
       }
     }
-
     let passwordHash: string | undefined;
     if (password) {
       passwordHash = await this.passwordsService.hash(password);
     }
-
     const updated = await this.users.update({
       where: { id },
       data: {

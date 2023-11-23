@@ -13,21 +13,17 @@ export class CreateTransactionGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<Request>();
-
     const accountId = request.body.accountId;
     const account = await this.accountsService.findOne(accountId);
-
     const owns = account.userId === request.userId;
     if (!owns) {
       throw new OwnershipViolationException(
         'No puedes crear transacciones en cuentas que no te pertenecen.',
       );
     }
-
     const categoryId = request.body.categoryId;
     if (categoryId) {
       const category = await this.categoriesService.findOne(categoryId);
-
       const ownsCategory = category.userId === request.userId;
       if (!ownsCategory) {
         throw new OwnershipViolationException(

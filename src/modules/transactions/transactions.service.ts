@@ -26,13 +26,10 @@ export class TransactionsService {
 
   async create(dto: CreateTransactionDto) {
     const { type, accountId, amount, reason, categoryId } = dto;
-
     const account = await this.accountsService.findOne(accountId);
-
     const category = categoryId
       ? await this.categoriesService.findOne(categoryId)
       : undefined;
-
     const transaction = await this.transactions.create({
       data: {
         type,

@@ -15,7 +15,6 @@ export class CategoriesService {
 
   async create(userId: string, dto: CreateCategoryDto) {
     const { name, description, color } = dto;
-
     const category = await this.categories.create({
       data: {
         name,

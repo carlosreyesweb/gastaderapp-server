@@ -17,7 +17,6 @@ export class CategoryEntity implements Category {
 
   constructor({ transactions, user, ...partial }: Partial<CategoryEntity>) {
     Object.assign(this, partial);
-
     if (user) this.user = new UserEntity(user);
     if (transactions) {
       this.transactions = transactions.map(

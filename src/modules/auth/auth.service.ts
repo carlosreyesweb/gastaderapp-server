@@ -16,11 +16,8 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const { email, password } = dto;
-
     const user = await this.usersService.findByEmail(email);
-
     await this.passwordsService.compare(password, user.passwordHash);
-
     const accessToken = await this._generateAccessToken(user.id);
 
     return { user: new UserEntity(user), accessToken };
@@ -28,13 +25,11 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const { email, password, name } = dto;
-
     const user = await this.usersService.create({
       name,
       email,
       password,
     });
-
     const accessToken = await this._generateAccessToken(user.id);
 
     return { user: new UserEntity(user), accessToken };

@@ -30,7 +30,6 @@ export class AccountEntity implements Account {
     ...partial
   }: Partial<AccountEntity>) {
     Object.assign(this, partial);
-
     if (user) this.user = new UserEntity(user);
     if (currency) this.currency = new CurrencyEntity(currency);
     if (transactions) {

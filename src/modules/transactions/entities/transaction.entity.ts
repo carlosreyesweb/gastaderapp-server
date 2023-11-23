@@ -22,7 +22,6 @@ export class TransactionEntity implements Transaction {
 
   constructor({ account, category, ...data }: Partial<TransactionEntity>) {
     Object.assign(this, data);
-
     if (account) this.account = new AccountEntity(account);
     if (category) this.category = new CategoryEntity(category);
   }
