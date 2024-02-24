@@ -4,7 +4,7 @@ import { CurrenciesService } from './currencies.service';
 
 @Controller('currencies')
 @ApiBearerAuth()
-@ApiTags('Monedas')
+@ApiTags('Currencies')
 export class CurrenciesController {
   constructor(private readonly currenciesService: CurrenciesService) {}
 

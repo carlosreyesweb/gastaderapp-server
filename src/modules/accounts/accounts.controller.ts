@@ -18,7 +18,7 @@ import { AccountOwnershipGuard } from './guards/account-ownership/account-owners
 
 @Controller('accounts')
 @ApiBearerAuth()
-@ApiTags('Cuentas')
+@ApiTags('Accounts')
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
 

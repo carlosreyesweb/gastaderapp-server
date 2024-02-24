@@ -19,7 +19,7 @@ import { TransactionsService } from './transactions.service';
 
 @Controller('transactions')
 @ApiBearerAuth()
-@ApiTags('Transacciones')
+@ApiTags('Transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 

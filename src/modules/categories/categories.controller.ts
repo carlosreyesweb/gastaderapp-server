@@ -18,7 +18,7 @@ import { CategoryOwnershipGuard } from './guards/category-ownership/category-own
 
 @Controller('categories')
 @ApiBearerAuth()
-@ApiTags('Categorías')
+@ApiTags('Categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 

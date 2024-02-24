@@ -4,7 +4,7 @@ import { ExchangeRatesService } from './exchange-rates.service';
 
 @Controller('exchange-rates')
 @ApiBearerAuth()
-@ApiTags('Tasas de cambio')
+@ApiTags('Exchange Rates')
 export class ExchangeRatesController {
   constructor(private readonly exchangeRatesService: ExchangeRatesService) {}
 
