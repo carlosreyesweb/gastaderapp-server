@@ -9,7 +9,7 @@ services:
       database:
         condition: service_healthy
   database:
-    image: mariadb:lts
+    image: mariadb:10.11.7-jammy
     environment:
       - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
       - MARIADB_USER=${DATABASE_USER}
