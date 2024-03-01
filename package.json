@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prisma-reset": "npx prisma migrate reset && ts-node ./prisma/seeders"
+    "db:init": "prisma migrate reset"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -79,5 +79,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "ts-node ./prisma/seeders"
   }
 }
