@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SkipAuth } from './decorators/skip-auth.decorator';
@@ -12,6 +12,7 @@ export class AuthController {
 
   @Post('login')
   @SkipAuth()
+  @HttpCode(200)
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
