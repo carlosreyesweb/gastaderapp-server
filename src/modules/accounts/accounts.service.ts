@@ -51,7 +51,7 @@ export class AccountsService {
         accountId: account.id,
         reason: 'Saldo inicial',
       });
-      const accountWithInitialBalance = merge({}, account, {
+      const accountWithInitialBalance = merge(account, {
         balance: initialTransaction.amount,
       });
 
@@ -70,7 +70,7 @@ export class AccountsService {
       accounts.map((acc) => acc.id),
     );
     const accountsWithBalance = accounts.map((account) =>
-      merge({}, account, { balance: balances[account.id] }),
+      merge(account, { balance: balances[account.id] }),
     );
 
     return accountsWithBalance.map((account) => new AccountEntity(account));
@@ -83,7 +83,7 @@ export class AccountsService {
     });
     if (!account) throw new AccountNotFoundException();
     const balance = await this.transactionsService.balanceOf(account.id);
-    const accountWithBalance = merge({}, account, { balance });
+    const accountWithBalance = merge(account, { balance });
 
     return new AccountEntity(accountWithBalance);
   }
@@ -116,7 +116,7 @@ export class AccountsService {
       include: { currency: true, transactions: true },
     });
     const balance = await this.transactionsService.balanceOf(id);
-    const updatedAccountWithBalance = merge({}, updated, {
+    const updatedAccountWithBalance = merge(updated, {
       balance,
     });
 
