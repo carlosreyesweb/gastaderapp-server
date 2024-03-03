@@ -18,12 +18,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:init": "prisma migrate reset"
+    "db:reset": "prisma migrate reset"
   },
   "dependencies": {
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.0.0",
-    "@nestjs/config": "^3.1.1",
+    "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/devtools-integration": "^0.1.5",
     "@nestjs/jwt": "^10.1.1",

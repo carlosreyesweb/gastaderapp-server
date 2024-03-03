@@ -1,11 +1,21 @@
-FROM node:20.11.1
-WORKDIR /backend
+# Base stage
+FROM node:20.11.1 AS base
+WORKDIR /api
 COPY package*.json ./
-COPY prisma ./
 RUN npm install
-RUN npx prisma generate
 COPY . .
+
+# dev stage
+FROM base AS dev
+RUN npx prisma generate
+CMD ["npm", "run", "start:dev"]
+
+# prod stage
+FROM base AS prod
+LABEL maintainer="Carlos Reyes Web <contact@carlosreyesweb.com>"
+LABEL version="1.0"
+LABEL description="An API for a theoretical personal finance management app."
+LABEL repository="https://github.com/carlosreyesweb/gastaderapp-server"
 RUN npm run build
+RUN npx prisma generate
 CMD ["npm", "run", "start:prod"]
-
-

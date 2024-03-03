@@ -1,11 +1,12 @@
 services:
-  backend:
-    build: .
-    command: ['npm', 'run', 'start:dev']
+  api:
+    build:
+      context: .
+      target: dev
     volumes:
-      - .:/backend
+      - .:/api
     ports:
-      - '3000:3000'
+      - '${PORT}:${PORT}'
     depends_on:
       database:
         condition: service_healthy
@@ -16,8 +17,6 @@ services:
       - MARIADB_USER=${DATABASE_USER}
       - MARIADB_PASSWORD=${DATABASE_PASSWORD}
       - MARIADB_DATABASE=${DATABASE_NAME}
-    ports:
-      - '3306:3306'
     healthcheck:
       test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       start_period: 1m
