@@ -4,10 +4,10 @@ WORKDIR /api
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN npx prisma generate
 
 # dev stage
 FROM base AS dev
-RUN npx prisma generate
 CMD ["npm", "run", "start:dev"]
 
 # prod stage
@@ -17,5 +17,4 @@ LABEL version="1.0"
 LABEL description="An API for a theoretical personal finance management app."
 LABEL repository="https://github.com/carlosreyesweb/gastaderapp-server"
 RUN npm run build
-RUN npx prisma generate
 CMD ["npm", "run", "start:prod"]
