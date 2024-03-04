@@ -1,10 +1,8 @@
 services:
   api:
-    build:
+    build: 
       context: .
       target: dev
-    volumes:
-      - .:/api
     ports:
       - '${PORT}:${PORT}'
     depends_on:
