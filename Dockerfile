@@ -22,6 +22,8 @@ RUN npx prisma generate
 COPY --chown=node:node src ./src
 COPY --chown=node:node tsconfig*.json ./
 RUN npm run build
+ENV NODE_ENV=production
+RUN npm prune && npm cache clean --force
 
 # Prod stage
 FROM base AS prod
@@ -32,7 +34,5 @@ COPY --from=build --chown=node:node /api/prisma/schema.prisma ./prisma/schema.pr
 COPY --from=build --chown=node:node /api/dist/src ./src
 COPY --from=build --chown=node:node /api/package*.json ./
 COPY --from=build --chown=node:node /api/.env ./
-ENV NODE_ENV=production
-RUN npm prune
 USER node
 CMD ["node", "src/main.js"]
