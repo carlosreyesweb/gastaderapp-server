@@ -33,7 +33,7 @@ installed, you can follow the instructions on the [official website](https://www
 1. Clone the repository
 2. Create a `.env` file based on the `.env.example` file and fill the missing
    values.
-3. Run `docker compose up -d` to start both the database and the API in dev
+3. Run `docker compose up -d --build` to start both the database and the API in dev
    mode.
 4. If it's the first time you're running the project, you need to run the
    migrations and seeders. You can do that by running
