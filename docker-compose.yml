@@ -2,7 +2,7 @@ services:
   database:
     image: mariadb:10.11.7-jammy
     ports:
-      - "3306:3306"
+      - "${DATABASE_PORT}:3306"
     environment:
       - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
       - MARIADB_USER=${DATABASE_USER}
