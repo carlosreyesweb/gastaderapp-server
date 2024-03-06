@@ -27,16 +27,16 @@ my little but humble knowledge in the field.
 
 ## How to run locally
 
-The easiest way to run this project is by using Docker. If you don't have it
-installed, you can follow the instructions on the [official website](https://www.docker.com/get-started).
+To run the project locally, you need to have Docker and Node.js installed on
+your machine. After that, you can follow the steps below:
 
 1. Clone the repository
 2. Create a `.env` file based on the `.env.example` file and fill the missing
    values.
-3. Run `docker compose up -d --build` to start both the database and the API in dev
-   mode.
+3. Run `docker compose up -d` to start the database.
 4. If it's the first time you're running the project, you need to run the
    migrations and seeders. You can do that by running
-   `docker compose exec api npm run db:reset`.
-5. Go to `http://localhost:$PORT/docs` to see the Swagger documentation.
-6. Congrats! The API is now running and ready to be used.
+   `npm run db:reset`.
+5. Run `npm run start:dev` to start the API.
+6. Go to `http://localhost:$PORT/docs` to see the Swagger documentation.
+7. Congrats! The API is now running and ready to be used.

@@ -1,16 +1,6 @@
 FROM node:20.11.1-alpine as base
 RUN apk add --no-cache libc6-compat
 
-# Dev stage
-FROM base as dev
-WORKDIR /api
-ENV NODE_ENV=development
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npx prisma generate
-CMD ["npm", "run", "start:dev"]
-
 # Build stage
 FROM base AS build
 WORKDIR /api

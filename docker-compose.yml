@@ -1,15 +1,8 @@
 services:
-  api:
-    build: 
-      context: .
-      target: dev
-    ports:
-      - '${PORT}:${PORT}'
-    depends_on:
-      database:
-        condition: service_healthy
   database:
     image: mariadb:10.11.7-jammy
+    ports:
+      - "3306:3306"
     environment:
       - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
       - MARIADB_USER=${DATABASE_USER}
