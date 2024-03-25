@@ -9,14 +9,14 @@ services:
       - ../..:/workspaces:cached
     command: sleep infinity
     network_mode: service:db
-    env_file: devcontainer.env
+    env_file: app.env
     depends_on:
       db:
         condition: service_healthy
   db:
     image: mariadb:10.11.7-jammy
     restart: unless-stopped
-    env_file: devcontainer.env
+    env_file: db.env
     healthcheck:
       test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       start_period: 1m
