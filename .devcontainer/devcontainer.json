@@ -1,0 +1,22 @@
+{
+  "name": "Gastaderapp Server",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "shutdownAction": "stopCompose",
+  "postCreateCommand": "npm install && npm run db:reset",
+  "forwardPorts": [4000, 3306],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "usernamehw.errorlens",
+        "dbaeumer.vscode-eslint",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "Prisma.prisma"
+      ]
+    }
+  }
+}
