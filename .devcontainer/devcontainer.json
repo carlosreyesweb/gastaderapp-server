@@ -5,6 +5,7 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "shutdownAction": "stopCompose",
   "postCreateCommand": "npm install && npm run db:reset",
+  "postStartCommand": "npm run start:dev",
   "forwardPorts": [4000, 3306],
   "customizations": {
     "vscode": {
