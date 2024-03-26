@@ -25,18 +25,26 @@ my little but humble knowledge in the field.
 - [x] Prisma
 - [x] Swagger
 
+# How to run inside a Dev Container
+
+1. Install the Remote - Containers extension on VSCode
+2. Open the project in VSCode
+3. Click on the green button on the bottom left corner of the screen
+4. Select "Reopen in Container"
+5. Wait for the container to be built
+6. Run `npm run start:dev` to start the API
+7. Go to `http://localhost:4000/docs` to see the Swagger documentation
+8. Congrats! The API is now running and ready to develop on it.
+
 ## How to run locally
 
-To run the project locally, you need to have Docker and Node.js installed on
-your machine. After that, you can follow the steps below:
+To run the project locally, you need to have Node.js and an instance of MySQL/MariaDB
+installed on your machine. After that, you can follow the steps below:
 
 1. Clone the repository
-2. Create a `.env` file based on the `.env.example` file and fill the missing
-   values.
-3. Run `docker compose up -d` to start the database.
-4. If it's the first time you're running the project, you need to run the
-   migrations and seeders. You can do that by running
-   `npm run db:reset`.
-5. Run `npm run start:dev` to start the API.
-6. Go to `http://localhost:$PORT/docs` to see the Swagger documentation.
-7. Congrats! The API is now running and ready to be used.
+2. Run `npm install` to install the dependencies
+3. Create a `.env` file in the root of the project based on the `.env.example` file
+4. Run `npm run db:reset` to create the database and run the migrations
+5. Run `npm run start:dev` to start the API
+6. Go to `http://localhost:4000/docs` to see the Swagger documentation
+7. Congrats! The API is now running and ready to develop on it.
